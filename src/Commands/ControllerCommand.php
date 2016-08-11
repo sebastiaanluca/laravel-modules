@@ -5,7 +5,6 @@ namespace Nwidart\Modules\Commands;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 
 class ControllerCommand extends GeneratorCommand
 {
@@ -16,33 +15,29 @@ class ControllerCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $argumentName = 'controller';
+    protected $argumentName = 'resource';
     
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'module:make-controller';
+    protected $name = 'module:make:resource-controller';
     
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generate new restful controller for the specified module.';
+    protected $description = 'Generate a new restful resource controller in the given module.';
     
     /**
      * Get the stub file name based on the plain option
      *
      * @return string
      */
-    private function getStubName()
+    protected function getStubName()
     {
-        if ($this->option('plain') === true) {
-            return '/controller-plain.stub';
-        }
-        
         return '/controller.stub';
     }
     
@@ -54,16 +49,16 @@ class ControllerCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getFullyQualifiedName());
         
         return (new Stub($this->getStubName(), [
-            'MODULENAME' => $module->getStudlyName(),
-            'CONTROLLERNAME' => $this->getControllerName(),
-            'NAMESPACE' => $module->getStudlyName(),
             'CLASS_NAMESPACE' => $this->getClassNamespace($module),
             'CLASS' => $this->getControllerName(),
-            'LOWER_NAME' => $module->getLowerName(),
-            'MODULE' => $this->getModuleName(),
-            'NAME' => $this->getModuleName(),
-            'STUDLY_NAME' => $module->getStudlyName(),
-            'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
+            'MODULE' => $this->getFullyQualifiedName(),
+            'RESOURCE' => strtolower($this->argument($this->argumentName) . 's'),
+            //            'MODULENAME' => $module->getStudlyName(),
+            //            'CONTROLLERNAME' => $this->getControllerName(),
+            //            'NAMESPACE' => $module->getStudlyName(),
+            //            'LOWER_NAME' => $module->getLowerName(),
+            //            'STUDLY_NAME' => $module->getStudlyName(),
+            //            'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
         ]))->render();
     }
     
@@ -75,37 +70,23 @@ class ControllerCommand extends GeneratorCommand
     protected function getArguments()
     {
         return [
-            ['controller', InputArgument::REQUIRED, 'The name of the controller class.'],
-            ['module', InputArgument::OPTIONAL, 'The name of module will be used.'],
+            [$this->argumentName, InputArgument::REQUIRED, 'The singular name of the resource.'],
+            ['module', InputArgument::OPTIONAL, 'The name of module to create the controller in.'],
         ];
     }
     
     /**
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['plain', 'p', InputOption::VALUE_NONE, 'Generate a plain controller', null],
-        ];
-    }
-    
-    /**
-     * @return array|string
+     * Get the resource controller name.
+     *
+     * @return string
      */
     protected function getControllerName()
     {
-        $controller = studly_case($this->argument('controller'));
-        
-        if (str_contains(strtolower($controller), 'controller') === false) {
-            $controller .= 'Controller';
-        }
-        
-        return $controller;
+        return studly_case($this->argument($this->argumentName)) . 'Controller';
     }
     
     /**
-     * Get controller name.
+     * Get the destination file path.
      *
      * @return string
      */
@@ -115,7 +96,7 @@ class ControllerCommand extends GeneratorCommand
         
         $controllerPath = $this->laravel['modules']->config('paths.generator.controller');
         
-        return $path . $controllerPath . '/' . $this->getControllerName() . '.php';
+        return $path . '/' . $controllerPath . '/' . $this->getControllerName() . '.php';
     }
     
     /**
