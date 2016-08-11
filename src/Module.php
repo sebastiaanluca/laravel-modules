@@ -53,6 +53,14 @@ class Module extends ServiceProvider
     {
         return $this->app;
     }
+    
+    /**
+     * @return string
+     */
+    public function getVendor()
+    {
+        return $this->get('vendor');
+    }
 
     /**
      * Get name.
@@ -82,6 +90,14 @@ class Module extends ServiceProvider
     public function getStudlyName()
     {
         return Str::studly($this->name);
+    }
+    
+    /**
+     * @return string
+     */
+    public function getVendorNamespace()
+    {
+        return strtolower(snake_case($this->getVendor()) . '/' . snake_case($this->getName()));
     }
 
     /**

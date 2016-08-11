@@ -65,7 +65,7 @@ class GenerateProviderCommand extends GeneratorCommand
     {
         $stub = $this->option('master') ? 'scaffold/provider' : 'provider';
 
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->laravel['modules']->findOrFail($this->getVendorNamespace());
 
         return (new Stub('/' . $stub . '.stub', [
             'NAMESPACE'         => $this->getClassNamespace($module),
@@ -86,13 +86,12 @@ class GenerateProviderCommand extends GeneratorCommand
      */
     protected function getDestinationFilePath()
     {
-        $path = $this->laravel['modules']->getModulePath($this->getModuleName());
-
+        $path = $this->laravel['modules']->getModulePath($this->getVendorNamespace());
         $generatorPath = $this->laravel['modules']->config('paths.generator.provider');
-
-        return $path . $generatorPath . '/' . $this->getFileName() . '.php';
+    
+        return $path . '/' . $generatorPath . '/' . $this->getFileName() . '.php';
     }
-
+    
     /**
      * @return string
      */

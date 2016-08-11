@@ -79,18 +79,18 @@ interface RepositoryInterface
     /**
      * Find a specific module.
      *
-     * @param $name
+     * @param $namespace
      *
      * @return mixed
      */
-    public function find($name);
+    public function find($namespace);
 
     /**
      * Find a specific module. If there return that, otherwise throw exception.
      *
-     * @param $name
+     * @param $namespace
      *
      * @return mixed
      */
-    public function findOrFail($name);
+    public function findOrFail($namespace);
 }

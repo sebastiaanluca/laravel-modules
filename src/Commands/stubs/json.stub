@@ -1,15 +1,14 @@
 {
+    "vendor": "$VENDOR$",
     "name": "$STUDLY_NAME$",
     "alias": "$LOWER_NAME$",
     "description": "",
     "keywords": [],
-    "active": 1,
+    "active": true,
     "order": 0,
     "providers": [
         "$MODULE_NAMESPACE$\\$STUDLY_NAME$\\Providers\\$STUDLY_NAME$ServiceProvider"
     ],
     "aliases":{},
-    "files": [
-        "start.php"
-    ]
+    "files": []
 }

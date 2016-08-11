@@ -1,5 +1,8 @@
 <?php
 
 return [
+    
+    'vendor' => '$VENDOR$',
 	'name' => '$STUDLY_NAME$'
+	
 ];

@@ -2,6 +2,7 @@
 
 namespace Nwidart\Modules\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use Nwidart\Modules\Generators\ModuleGenerator;
 use Symfony\Component\Console\Input\InputArgument;
@@ -15,14 +16,43 @@ class MakeCommand extends Command
      * @var string
      */
     protected $name = 'module:make';
-
+    
     /**
      * The console command description.
      *
      * @var string
      */
     protected $description = 'Generate new module.';
-
+    
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            ['name', InputArgument::IS_ARRAY, 'The names of modules will be created.'],
+        ];
+    }
+    
+    protected function getOptions()
+    {
+        return [
+            ['plain', 'p', InputOption::VALUE_NONE, 'Generate a plain module (without some resources).'],
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when module already exist.'],
+        ];
+    }
+    
+    protected function validateName($name)
+    {
+        if (count(explode('/', $name)) === 2) {
+            return;
+        }
+        
+        throw new Exception('Module name needs to be in the "vendor/name" format.');
+    }
+    
     /**
      * Execute the console command.
      *
@@ -31,36 +61,20 @@ class MakeCommand extends Command
     public function fire()
     {
         $names = $this->argument('name');
-
+        
         foreach ($names as $name) {
-            with(new ModuleGenerator($name))
+            $this->validateName($name);
+            
+            list($vendor, $name) = explode('/', $name);
+            
+            with(new ModuleGenerator($vendor, $name))
                 ->setFilesystem($this->laravel['files'])
-                ->setModule($this->laravel['modules'])
+                ->setModuleManager($this->laravel['modules'])
                 ->setConfig($this->laravel['config'])
                 ->setConsole($this)
                 ->setForce($this->option('force'))
                 ->setPlain($this->option('plain'))
                 ->generate();
         }
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return array(
-            array('name', InputArgument::IS_ARRAY, 'The names of modules will be created.'),
-        );
-    }
-
-    protected function getOptions()
-    {
-        return [
-            array('plain', 'p', InputOption::VALUE_NONE, 'Generate a plain module (without some resources).'),
-            array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when module already exist.'),
-        ];
     }
 }
