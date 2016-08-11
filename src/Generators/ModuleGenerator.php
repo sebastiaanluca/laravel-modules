@@ -162,6 +162,16 @@ class ModuleGenerator extends Generator
     }
     
     /**
+     * Get replacement for $VENDOR$.
+     *
+     * @return string
+     */
+    protected function getNamespaceReplacement()
+    {
+        return $this->getVendorReplacement();
+    }
+    
+    /**
      * Get replacement for $AUTHOR_NAME$.
      *
      * @return string
@@ -216,7 +226,7 @@ class ModuleGenerator extends Generator
     /**
      * @return string
      */
-    public function getVendorNamespace()
+    public function getFullyQualifiedName()
     {
         return strtolower(snake_case($this->getVendor()) . '/' . snake_case($this->getName()));
     }
@@ -226,7 +236,7 @@ class ModuleGenerator extends Generator
      */
     public function getSourcePath()
     {
-        return $this->getVendorNamespace() . '/src';
+        return $this->getFullyQualifiedName() . '/src';
     }
     
     /**
@@ -326,13 +336,13 @@ class ModuleGenerator extends Generator
     }
     
     /**
-     * Get the list of folders will created.
+     * Get the list of folders to create.
      *
      * @return array
      */
-    public function getFolders()
+    public function getDefaultFolders()
     {
-        return array_values($this->modules->config('paths.generator'));
+        return array_only($this->modules->config('paths.generator'), $this->modules->config('paths.defaults'));
     }
     
     /**
@@ -364,13 +374,13 @@ class ModuleGenerator extends Generator
      */
     public function generate()
     {
-        $namespace = $this->getVendorNamespace();
+        $fqn = $this->getFullyQualifiedName();
         
-        if ($this->modules->has($namespace)) {
+        if ($this->modules->has($fqn)) {
             if ($this->force) {
-                $this->modules->delete($namespace);
+                $this->modules->delete($fqn);
             } else {
-                $this->console->error("Module [{$namespace}] already exist!");
+                $this->console->error("Module [{$fqn}] already exist!");
                 
                 return;
             }
@@ -384,7 +394,7 @@ class ModuleGenerator extends Generator
             $this->generateResources();
         }
         
-        $this->console->info("Module [{$namespace}] created successfully.");
+        $this->console->info("Module [{$fqn}] created successfully.");
     }
     
     /**
@@ -392,8 +402,8 @@ class ModuleGenerator extends Generator
      */
     public function generateFolders()
     {
-        foreach ($this->getFolders() as $folder) {
-            $path = $this->modules->getModulePath($this->getVendorNamespace()) . '/' . $folder;
+        foreach ($this->getDefaultFolders() as $folder) {
+            $path = $this->modules->getModulePath($this->getFullyQualifiedName()) . '/' . $folder;
             
             $this->filesystem->makeDirectory($path, 0755, true);
             
@@ -417,7 +427,7 @@ class ModuleGenerator extends Generator
     public function generateFiles()
     {
         foreach ($this->getFiles() as $stub => $file) {
-            $path = $this->modules->getModulePath($this->getVendorNamespace()) . '/' . $file;
+            $path = $this->modules->getModulePath($this->getFullyQualifiedName()) . '/' . $file;
             
             if (! $this->filesystem->isDirectory($dir = dirname($path))) {
                 $this->filesystem->makeDirectory($dir, 0775, true);
@@ -442,7 +452,7 @@ class ModuleGenerator extends Generator
         
         $this->console->call('module:make-provider', [
             'name' => $this->getName() . 'ServiceProvider',
-            'module' => $this->getVendorNamespace(),
+            'module' => $this->getFullyQualifiedName(),
             '--master' => true,
         ]);
         

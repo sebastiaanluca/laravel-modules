@@ -7,7 +7,7 @@
     "active": true,
     "order": 0,
     "providers": [
-        "$MODULE_NAMESPACE$\\$STUDLY_NAME$\\Providers\\$STUDLY_NAME$ServiceProvider"
+        "$NAMESPACE$\\$STUDLY_NAME$\\Providers\\$STUDLY_NAME$ServiceProvider"
     ],
     "aliases":{},
     "files": []

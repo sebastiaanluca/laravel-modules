@@ -10,26 +10,19 @@ use Illuminate\Support\Str;
 class Module extends ServiceProvider
 {
     /**
-     * The laravel application instance.
-     *
-     * @var Application
-     */
-    protected $app;
-
-    /**
      * The module name.
      *
      * @var
      */
     protected $name;
-
+    
     /**
      * The module path,.
      *
      * @var string
      */
     protected $path;
-
+    
     /**
      * The constructor.
      *
@@ -39,11 +32,69 @@ class Module extends ServiceProvider
      */
     public function __construct(Application $app, $name, $path)
     {
-        $this->app = $app;
+        parent::__construct($app);
+        
         $this->name = $name;
         $this->path = realpath($path);
     }
-
+    
+    /**
+     * Register module's translation.
+     *
+     * @return void
+     */
+    protected function registerTranslation()
+    {
+        $lowerName = $this->getLowerName();
+        
+        $langPath = $this->getPath() . "/Resources/lang";
+        
+        if (is_dir($langPath)) {
+            $this->loadTranslationsFrom($langPath, $lowerName);
+        }
+    }
+    
+    /**
+     * Register the module event.
+     *
+     * @param string $event
+     */
+    protected function fireEvent($event)
+    {
+        $this->app['events']->fire(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
+    }
+    
+    /**
+     * Register the aliases from this module.
+     */
+    protected function registerAliases()
+    {
+        $loader = AliasLoader::getInstance();
+        foreach ($this->get('aliases', []) as $aliasName => $aliasClass) {
+            $loader->alias($aliasName, $aliasClass);
+        }
+    }
+    
+    /**
+     * Register the service providers from this module.
+     */
+    protected function registerProviders()
+    {
+        foreach ($this->get('providers', []) as $provider) {
+            $this->app->register($provider);
+        }
+    }
+    
+    /**
+     * Register the files from this module.
+     */
+    protected function registerFiles()
+    {
+        foreach ($this->get('files', []) as $file) {
+            include $this->path . '/' . $file;
+        }
+    }
+    
     /**
      * Get laravel instance.
      *
@@ -61,7 +112,7 @@ class Module extends ServiceProvider
     {
         return $this->get('vendor');
     }
-
+    
     /**
      * Get name.
      *
@@ -71,7 +122,7 @@ class Module extends ServiceProvider
     {
         return $this->name;
     }
-
+    
     /**
      * Get name in lower case.
      *
@@ -81,7 +132,7 @@ class Module extends ServiceProvider
     {
         return strtolower($this->name);
     }
-
+    
     /**
      * Get name in studly case.
      *
@@ -95,11 +146,11 @@ class Module extends ServiceProvider
     /**
      * @return string
      */
-    public function getVendorNamespace()
+    public function getFullyQualifiedName()
     {
         return strtolower(snake_case($this->getVendor()) . '/' . snake_case($this->getName()));
     }
-
+    
     /**
      * Get description.
      *
@@ -109,7 +160,7 @@ class Module extends ServiceProvider
     {
         return $this->get('description');
     }
-
+    
     /**
      * Get alias.
      *
@@ -119,7 +170,7 @@ class Module extends ServiceProvider
     {
         return $this->get('alias');
     }
-
+    
     /**
      * Get priority.
      *
@@ -129,7 +180,7 @@ class Module extends ServiceProvider
     {
         return $this->get('priority');
     }
-
+    
     /**
      * Get path.
      *
@@ -139,7 +190,7 @@ class Module extends ServiceProvider
     {
         return $this->path;
     }
-
+    
     /**
      * Set path.
      *
@@ -150,10 +201,10 @@ class Module extends ServiceProvider
     public function setPath($path)
     {
         $this->path = $path;
-
+        
         return $this;
     }
-
+    
     /**
      * Bootstrap the application events.
      */
@@ -162,26 +213,10 @@ class Module extends ServiceProvider
         if (config('modules.register.translations', true) === true) {
             $this->registerTranslation();
         }
-
+        
         $this->fireEvent('boot');
     }
-
-    /**
-     * Register module's translation.
-     *
-     * @return void
-     */
-    protected function registerTranslation()
-    {
-        $lowerName = $this->getLowerName();
-
-        $langPath = $this->getPath() . "/Resources/lang";
-
-        if (is_dir($langPath)) {
-            $this->loadTranslationsFrom($langPath, $lowerName);
-        }
-    }
-
+    
     /**
      * Get json contents.
      *
@@ -192,10 +227,10 @@ class Module extends ServiceProvider
         if (is_null($file)) {
             $file = 'module.json';
         }
-
+        
         return new Json($this->getPath() . '/' . $file, $this->app['files']);
     }
-
+    
     /**
      * Get a specific data from json file by given the key.
      *
@@ -208,7 +243,7 @@ class Module extends ServiceProvider
     {
         return $this->json()->get($key, $default);
     }
-
+    
     /**
      * Get a specific data from composer.json file by given the key.
      *
@@ -221,72 +256,21 @@ class Module extends ServiceProvider
     {
         return $this->json('composer.json')->get($key, $default);
     }
-
+    
     /**
      * Register the module.
      */
     public function register()
     {
         $this->registerAliases();
-
+        
         $this->registerProviders();
-
+        
         $this->registerFiles();
-
+        
         $this->fireEvent('register');
     }
-
-    /**
-     * Register the module event.
-     *
-     * @param string $event
-     */
-    protected function fireEvent($event)
-    {
-        $this->app['events']->fire(sprintf('modules.%s.' . $event, $this->getLowerName()), [$this]);
-    }
-
-    /**
-     * Register the aliases from this module.
-     */
-    protected function registerAliases()
-    {
-        $loader = AliasLoader::getInstance();
-        foreach ($this->get('aliases', []) as $aliasName => $aliasClass) {
-            $loader->alias($aliasName, $aliasClass);
-        }
-    }
-
-    /**
-     * Register the service providers from this module.
-     */
-    protected function registerProviders()
-    {
-        foreach ($this->get('providers', []) as $provider) {
-            $this->app->register($provider);
-        }
-    }
-
-    /**
-     * Register the files from this module.
-     */
-    protected function registerFiles()
-    {
-        foreach ($this->get('files', []) as $file) {
-            include $this->path . '/' . $file;
-        }
-    }
-
-    /**
-     * Handle call __toString.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->getStudlyName();
-    }
-
+    
     /**
      * Determine whether the given status same with the current module status.
      *
@@ -298,7 +282,7 @@ class Module extends ServiceProvider
     {
         return $this->get('active', 0) === $status;
     }
-
+    
     /**
      * Determine whether the current module activated.
      *
@@ -308,7 +292,7 @@ class Module extends ServiceProvider
     {
         return $this->active();
     }
-
+    
     /**
      * Alternate for "enabled" method.
      *
@@ -318,7 +302,7 @@ class Module extends ServiceProvider
     {
         return $this->isStatus(1);
     }
-
+    
     /**
      * Determine whether the current module not activated.
      *
@@ -326,9 +310,9 @@ class Module extends ServiceProvider
      */
     public function notActive()
     {
-        return !$this->active();
+        return ! $this->active();
     }
-
+    
     /**
      * Alias for "notActive" method.
      *
@@ -336,9 +320,9 @@ class Module extends ServiceProvider
      */
     public function disabled()
     {
-        return !$this->enabled();
+        return ! $this->enabled();
     }
-
+    
     /**
      * Set active state for current module.
      *
@@ -350,7 +334,7 @@ class Module extends ServiceProvider
     {
         return $this->json()->set('active', $active)->save();
     }
-
+    
     /**
      * Disable the current module.
      *
@@ -359,24 +343,24 @@ class Module extends ServiceProvider
     public function disable()
     {
         $this->app['events']->fire('module.disabling', [$this]);
-
+        
         $this->setActive(0);
-
+        
         $this->app['events']->fire('module.disabled', [$this]);
     }
-
+    
     /**
      * Enable the current module.
      */
     public function enable()
     {
         $this->app['events']->fire('module.enabling', [$this]);
-
+        
         $this->setActive(1);
-
+        
         $this->app['events']->fire('module.enabled', [$this]);
     }
-
+    
     /**
      * Delete the current module.
      *
@@ -386,7 +370,7 @@ class Module extends ServiceProvider
     {
         return $this->json()->getFilesystem()->deleteDirectory($this->getPath());
     }
-
+    
     /**
      * Get extra path.
      *
@@ -398,7 +382,7 @@ class Module extends ServiceProvider
     {
         return $this->getPath() . '/' . $path;
     }
-
+    
     /**
      * Handle call to __get method.
      *
@@ -409,5 +393,15 @@ class Module extends ServiceProvider
     public function __get($key)
     {
         return $this->get($key);
+    }
+    
+    /**
+     * Handle call __toString.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getStudlyName();
     }
 }

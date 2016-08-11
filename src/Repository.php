@@ -143,7 +143,7 @@ class Repository implements RepositoryInterface, Countable
                 $name = Json::make($manifest)->get('name');
                 $module = new Module($this->app, $name, dirname($manifest));
                 
-                $modules[$module->getVendorNamespace()] = $module;
+                $modules[$module->getFullyQualifiedName()] = $module;
             }
         }
         
@@ -209,13 +209,13 @@ class Repository implements RepositoryInterface, Countable
     /**
      * Determine whether the given module exist.
      *
-     * @param string $namespace
+     * @param string $fqn
      *
      * @return bool
      */
-    public function has($namespace)
+    public function has($fqn)
     {
-        return array_key_exists($namespace, $this->all());
+        return array_key_exists($fqn, $this->all());
     }
     
     /**
@@ -307,14 +307,14 @@ class Repository implements RepositoryInterface, Countable
     /**
      * Find a specific module.
      *
-     * @param string $namespace
+     * @param string $fqn
      *
      * @return mixed|void
      */
-    public function find($namespace)
+    public function find($fqn)
     {
         foreach ($this->all() as $module) {
-            if ($module->getVendorNamespace() === strtolower($namespace)) {
+            if ($module->getFullyQualifiedName() === strtolower($fqn)) {
                 return $module;
             }
         }

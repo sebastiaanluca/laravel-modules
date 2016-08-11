@@ -79,11 +79,11 @@ interface RepositoryInterface
     /**
      * Find a specific module.
      *
-     * @param $namespace
+     * @param $fqn
      *
      * @return mixed
      */
-    public function find($namespace);
+    public function find($fqn);
 
     /**
      * Find a specific module. If there return that, otherwise throw exception.
