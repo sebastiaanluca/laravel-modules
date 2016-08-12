@@ -65,7 +65,7 @@ class ControllerCommand extends GeneratorCommand
     {
         return [
             [$this->argumentName, InputArgument::REQUIRED, 'The singular name of the resource.'],
-            ['module', InputArgument::OPTIONAL, 'The name of module to create the controller in.'],
+            ['module', InputArgument::OPTIONAL, 'The name of the module to create the controller in.'],
         ];
     }
     
