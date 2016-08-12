@@ -53,12 +53,6 @@ class ControllerCommand extends GeneratorCommand
             'CLASS' => $this->getControllerName(),
             'MODULE' => $this->getFullyQualifiedName(),
             'RESOURCE' => strtolower($this->argument($this->argumentName) . 's'),
-            //            'MODULENAME' => $module->getStudlyName(),
-            //            'CONTROLLERNAME' => $this->getControllerName(),
-            //            'NAMESPACE' => $module->getStudlyName(),
-            //            'LOWER_NAME' => $module->getLowerName(),
-            //            'STUDLY_NAME' => $module->getStudlyName(),
-            //            'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
         ]))->render();
     }
     

@@ -1,0 +1,19 @@
+<?php
+
+namespace $CLASS_NAMESPACE$;
+
+use SebastiaanLuca\Router\Routers\BaseRouter;
+use $MODULE_NAMESPACE$\Http\Controllers\$CONTROLLER$;
+
+class $CLASS$ extends BaseRouter
+{
+    /**
+     * Map the routes.
+     */
+    public function map()
+    {
+        $this->router->group(['middleware' => 'web'], function () {
+            $this->router->resource('$RESOURCE$s', $CONTROLLER$::class);
+        });
+    }
+}

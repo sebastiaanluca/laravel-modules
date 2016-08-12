@@ -12,6 +12,7 @@ use Nwidart\Modules\Commands\GenerateEventCommand;
 use Nwidart\Modules\Commands\GenerateListenerCommand;
 use Nwidart\Modules\Commands\GenerateMiddlewareCommand;
 use Nwidart\Modules\Commands\GenerateProviderCommand;
+use Nwidart\Modules\Commands\GenerateResourceRouter;
 use Nwidart\Modules\Commands\GenerateRouteProviderCommand;
 use Nwidart\Modules\Commands\InstallCommand;
 use Nwidart\Modules\Commands\ListCommand;
@@ -53,6 +54,7 @@ class ConsoleServiceProvider extends ServiceProvider
         GenerateMiddlewareCommand::class,
         GenerateProviderCommand::class,
         GenerateRouteProviderCommand::class,
+        GenerateResourceRouter::class,
         InstallCommand::class,
         ListCommand::class,
         MigrateCommand::class,

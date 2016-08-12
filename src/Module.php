@@ -114,6 +114,14 @@ class Module extends ServiceProvider
     }
     
     /**
+     * @return string
+     */
+    public function getStudlyVendor()
+    {
+        return studly_case($this->getVendor());
+    }
+    
+    /**
      * Get name.
      *
      * @return string
@@ -149,6 +157,14 @@ class Module extends ServiceProvider
     public function getFullyQualifiedName()
     {
         return strtolower(snake_case($this->getVendor()) . '/' . snake_case($this->getName()));
+    }
+    
+    /**
+     * @return string
+     */
+    public function getNamespace()
+    {
+        return $this->getStudlyVendor() . '\\' . $this->getStudlyName();
     }
     
     /**
