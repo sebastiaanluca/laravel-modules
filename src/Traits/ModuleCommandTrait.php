@@ -7,13 +7,24 @@ trait ModuleCommandTrait
     /**
      * @return string
      */
+    public function getActiveModuleIdentifier()
+    {
+        return $this->argument('module') ?: app('modules')->getUsedNow();
+    }
+    
+    /**
+     * @return \Nwidart\Modules\Module
+     */
+    public function getModule()
+    {
+        return app('modules')->findOrFail($this->getActiveModuleIdentifier());
+    }
+    
+    /**
+     * @return string
+     */
     public function getFullyQualifiedName()
     {
-        $module = $this->argument('module') ?: app('modules')->getUsedNow();
-        
-        /** @var \Nwidart\Modules\Module $module */
-        $module = app('modules')->findOrFail($module);
-        
-        return $module->getFullyQualifiedName();
+        return $this->getModule()->getFullyQualifiedName();
     }
 }

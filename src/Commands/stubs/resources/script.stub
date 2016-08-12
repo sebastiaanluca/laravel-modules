@@ -1,0 +1,4 @@
+require('../styles/$MODULE_NAME$.scss')
+
+//
+console.log('$MODULE_NAME$ module loaded')

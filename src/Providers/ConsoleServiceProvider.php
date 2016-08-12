@@ -8,6 +8,7 @@ use Nwidart\Modules\Commands\ControllerCommand;
 use Nwidart\Modules\Commands\DisableCommand;
 use Nwidart\Modules\Commands\DumpCommand;
 use Nwidart\Modules\Commands\EnableCommand;
+use Nwidart\Modules\Commands\GenerateDefaultScripts;
 use Nwidart\Modules\Commands\GenerateEventCommand;
 use Nwidart\Modules\Commands\GenerateListenerCommand;
 use Nwidart\Modules\Commands\GenerateMiddlewareCommand;
@@ -37,7 +38,7 @@ use Nwidart\Modules\Commands\UseCommand;
 class ConsoleServiceProvider extends ServiceProvider
 {
     protected $defer = false;
-
+    
     /**
      * The available commands
      *
@@ -74,8 +75,9 @@ class ConsoleServiceProvider extends ServiceProvider
         DumpCommand::class,
         MakeRequestCommand::class,
         PublishConfigurationCommand::class,
+        GenerateDefaultScripts::class,
     ];
-
+    
     /**
      * Register the commands.
      */
@@ -85,18 +87,18 @@ class ConsoleServiceProvider extends ServiceProvider
             $this->commands($command);
         }
     }
-
+    
     /**
      * @return array
      */
     public function provides()
     {
         $provides = [];
-
+        
         foreach ($this->commands as $command) {
             $provides[] = $command;
         }
-
+        
         return $provides;
     }
 }

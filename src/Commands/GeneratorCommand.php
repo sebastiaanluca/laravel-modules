@@ -14,43 +14,24 @@ abstract class GeneratorCommand extends Command
      * @var string
      */
     protected $argumentName = '';
-
+    
     /**
      * Get template contents.
      *
      * @return string
      */
-    abstract protected function getTemplateContents();
-
+    protected function getTemplateContents()
+    {
+        return '';   
+    }
+    
     /**
      * Get the destination file path.
      *
      * @return string
      */
     abstract protected function getDestinationFilePath();
-
-    /**
-     * Execute the console command.
-     */
-    public function fire()
-    {
-        $path = str_replace('\\', '/', $this->getDestinationFilePath());
-        
-        if (!$this->laravel['files']->isDirectory($dir = dirname($path))) {
-            $this->laravel['files']->makeDirectory($dir, 0777, true);
-        }
-
-        $contents = $this->getTemplateContents();
-        
-        try {
-            with(new FileGenerator($path, $contents))->generate();
-
-            $this->info("Created : {$path}");
-        } catch (FileAlreadyExistException $e) {
-            $this->error("File : {$path} already exists.");
-        }
-    }
-
+    
     /**
      * Get class name.
      *
@@ -60,7 +41,7 @@ abstract class GeneratorCommand extends Command
     {
         return class_basename($this->argument($this->argumentName));
     }
-
+    
     /**
      * Get default namespace.
      *
@@ -70,7 +51,7 @@ abstract class GeneratorCommand extends Command
     {
         return '';
     }
-
+    
     /**
      * Get class namespace.
      *
@@ -82,11 +63,37 @@ abstract class GeneratorCommand extends Command
     {
         $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
         $extra = str_replace('/', '\\', $extra);
-
+        
         $namespace = $module->getNamespace();
         $namespace .= '\\' . $this->getDefaultNamespace();
         $namespace .= '\\' . $extra;
         
         return trim($namespace, '\\');
+    }
+    
+    /**
+     * Execute the console command.
+     */
+    public function fire()
+    {
+        // TODO
+        //        property_exists($this, 'files');
+        
+        $path = str_replace('\\', '/', $this->getDestinationFilePath());
+        
+        if (! $this->laravel['files']->isDirectory($dir = dirname($path))) {
+            $this->laravel['files']->makeDirectory($dir, 0777, true);
+        }
+        
+        // TODO
+        $contents = $this->getTemplateContents();
+        
+        try {
+            with(new FileGenerator($path, $contents))->generate();
+            
+            $this->info("Created : {$path}");
+        } catch (FileAlreadyExistException $e) {
+            $this->error("File : {$path} already exists.");
+        }
     }
 }
