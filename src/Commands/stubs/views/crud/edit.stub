@@ -1,0 +1,9 @@
+@extends('$MODULE$::layouts/default')
+
+@section('title')
+    $MODULE_TITLE$
+@stop
+
+@section('content')
+    Edit
+@stop

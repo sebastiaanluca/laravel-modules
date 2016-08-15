@@ -26,11 +26,17 @@ class GenerateDefaultViews extends MultiGeneratorCommand
     protected $description = 'Generate a new set of default views in the given module.';
     
     /**
-     * The files to generate.
+     * Get the files to generate.
      *
-     * @var array
+     * @return array
      */
-    protected $files = [
-        'layout' => 'views/layout.stub',
-    ];
+    protected function getFiles()
+    {
+        return [
+            [
+                'type' => 'layout',
+                'source' => 'views/layout.stub',
+            ],
+        ];
+    }
 }

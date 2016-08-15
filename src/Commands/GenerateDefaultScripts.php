@@ -26,12 +26,21 @@ class GenerateDefaultScripts extends MultiGeneratorCommand
     protected $description = 'Generate a new set of default assets in the given module.';
     
     /**
-     * The files to generate.
+     * Get the files to generate.
      *
-     * @var array
+     * @return array
      */
-    protected $files = [
-        'script' => 'resources/script.stub',
-        'style' => 'resources/style.stub',
-    ];
+    protected function getFiles()
+    {
+        return [
+            [
+                'type' => 'script',
+                'source' => 'resources/script.stub',
+            ],
+            [
+                'type' => 'style',
+                'source' => 'resources/style.stub',
+            ],
+        ];
+    }
 }

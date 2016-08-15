@@ -14,7 +14,9 @@ use Nwidart\Modules\Commands\GenerateEventCommand;
 use Nwidart\Modules\Commands\GenerateListenerCommand;
 use Nwidart\Modules\Commands\GenerateMiddlewareCommand;
 use Nwidart\Modules\Commands\GenerateProviderCommand;
+use Nwidart\Modules\Commands\GenerateResource;
 use Nwidart\Modules\Commands\GenerateResourceRouter;
+use Nwidart\Modules\Commands\GenerateResourceViews;
 use Nwidart\Modules\Commands\GenerateRouteProviderCommand;
 use Nwidart\Modules\Commands\InstallCommand;
 use Nwidart\Modules\Commands\ListCommand;
@@ -78,6 +80,8 @@ class ConsoleServiceProvider extends ServiceProvider
         PublishConfigurationCommand::class,
         GenerateDefaultScripts::class,
         GenerateDefaultViews::class,
+        GenerateResource::class,
+        GenerateResourceViews::class,
     ];
     
     /**

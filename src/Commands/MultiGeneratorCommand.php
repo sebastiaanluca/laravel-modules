@@ -21,13 +21,6 @@ abstract class MultiGeneratorCommand extends Command
     protected $argumentName = '';
     
     /**
-     * The files to generate.
-     *
-     * @var array
-     */
-    protected $files = [];
-    
-    /**
      * Get the console command arguments.
      *
      * @return array
@@ -99,42 +92,47 @@ abstract class MultiGeneratorCommand extends Command
     /**
      * Get the destination file path.
      *
-     * @param string $type
+     * @param string $file
      *
      * @return string
      */
-    protected function getDestinationFilePathFor($type)
+    protected function getDestinationFilePathFor($file)
     {
         $module = $this->getModule();
         
         $path = $this->laravel['modules']->getModulePath($module->getFullyQualifiedName());
-        $target = $this->laravel['modules']->config('paths.generator.' . $type);
+        $target = $this->laravel['modules']->config('paths.generator.' . $file['type']);
         
         if (! is_array($target)) {
             $target = ['directory' => $target];
         }
         
-        $directory = array_get($target, 'directory', '');
-        $name = array_get($target, 'name', $module->getLowerName());
-        $extension = array_get($target, 'extension', '.php');
+        // $file values take precedence over user configuration
+        $directory = array_get($file, 'directory') ?: array_get($target, 'directory', '');
+        $name = array_get($file, 'name') ?: array_get($target, 'name', $module->getLowerName());
+        $extension = array_get($file, 'extension') ?: array_get($target, 'extension', '.php');
         
         return "{$path}/{$directory}/{$name}{$extension}";
     }
     
     
     /**
-     * @param string $type
-     * @param string $defaultSource
+     * @param string $file
      */
-    protected function generateFile($type, $defaultSource)
+    protected function generateFile($file)
     {
-        $path = str_replace('\\', '/', $this->getDestinationFilePathFor($type));
+        $path = str_replace('\\', '/', $this->getDestinationFilePathFor($file));
         
         if (! $this->laravel['files']->isDirectory($dir = dirname($path))) {
             $this->laravel['files']->makeDirectory($dir, 0777, true);
         }
         
-        $stub = $this->laravel['modules']->config('paths.sources.' . $type, $defaultSource);
+        $stub =  $this->laravel['modules']->config('paths.sources.' . $file['type'], $file['source']);
+        
+        if(array_get($file, 'overrideSource')){
+            $stub = array_get($file, 'source', $stub); 
+        }
+        
         $contents = $this->getTemplateContentsFor($stub);
         
         try {
@@ -147,12 +145,19 @@ abstract class MultiGeneratorCommand extends Command
     }
     
     /**
+     * Get the files to generate.
+     *
+     * @return array
+     */
+    abstract protected function getFiles();
+    
+    /**
      * Execute the console command.
      */
     public function fire()
     {
-        foreach ($this->files as $type => $defaultSource) {
-            $this->generateFile($type, $defaultSource);
+        foreach ($this->getFiles() as $file) {
+            $this->generateFile($file);
         }
     }
 }
