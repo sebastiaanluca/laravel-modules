@@ -31,7 +31,6 @@ class GenerateDefaultViews extends MultiGeneratorCommand
      * @var array
      */
     protected $files = [
-        'layout' => '/views/layout.stub',
-        'page' => '/views/page.stub',
+        'layout' => 'views/layout.stub',
     ];
 }

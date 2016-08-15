@@ -135,7 +135,6 @@ abstract class MultiGeneratorCommand extends Command
         }
         
         $stub = $this->laravel['modules']->config('paths.sources.' . $type, $defaultSource);
-        
         $contents = $this->getTemplateContentsFor($stub);
         
         try {

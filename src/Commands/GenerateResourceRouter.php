@@ -78,7 +78,7 @@ class GenerateResourceRouter extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getFullyQualifiedName());
         $resource = strtolower($this->argument($this->argumentName));
         
-        return (new Stub('/resource_router.stub', [
+        return (new Stub('resource_router.stub', [
             'CLASS_NAMESPACE' => $this->getClassNamespace($module),
             'MODULE_NAMESPACE' => $module->getNamespace(),
             'CONTROLLER' => studly_case($resource) . 'Controller',

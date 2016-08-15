@@ -38,7 +38,7 @@ class ControllerCommand extends GeneratorCommand
      */
     protected function getStubName()
     {
-        return '/controller.stub';
+        return 'controller.stub';
     }
     
     /**

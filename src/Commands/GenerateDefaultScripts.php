@@ -31,7 +31,7 @@ class GenerateDefaultScripts extends MultiGeneratorCommand
      * @var array
      */
     protected $files = [
-        'script' => ['/resources/script.stub', 'js'],
-        'style' => ['/resources/style.stub', 'scss'],
+        'script' => 'resources/script.stub',
+        'style' => 'resources/style.stub',
     ];
 }

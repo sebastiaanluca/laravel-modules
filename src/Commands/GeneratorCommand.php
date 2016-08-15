@@ -76,24 +76,20 @@ abstract class GeneratorCommand extends Command
      */
     public function fire()
     {
-        // TODO
-        //        property_exists($this, 'files');
-        
         $path = str_replace('\\', '/', $this->getDestinationFilePath());
         
         if (! $this->laravel['files']->isDirectory($dir = dirname($path))) {
             $this->laravel['files']->makeDirectory($dir, 0777, true);
         }
         
-        // TODO
         $contents = $this->getTemplateContents();
         
         try {
             with(new FileGenerator($path, $contents))->generate();
             
-            $this->info("Created : {$path}");
+            $this->info("Created: {$path}");
         } catch (FileAlreadyExistException $e) {
-            $this->error("File : {$path} already exists.");
+            $this->error("File: {$path} already exists.");
         }
     }
 }
