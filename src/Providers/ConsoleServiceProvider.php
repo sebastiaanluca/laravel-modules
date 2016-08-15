@@ -9,6 +9,7 @@ use Nwidart\Modules\Commands\DisableCommand;
 use Nwidart\Modules\Commands\DumpCommand;
 use Nwidart\Modules\Commands\EnableCommand;
 use Nwidart\Modules\Commands\GenerateDefaultScripts;
+use Nwidart\Modules\Commands\GenerateDefaultViews;
 use Nwidart\Modules\Commands\GenerateEventCommand;
 use Nwidart\Modules\Commands\GenerateListenerCommand;
 use Nwidart\Modules\Commands\GenerateMiddlewareCommand;
@@ -76,6 +77,7 @@ class ConsoleServiceProvider extends ServiceProvider
         MakeRequestCommand::class,
         PublishConfigurationCommand::class,
         GenerateDefaultScripts::class,
+        GenerateDefaultViews::class,
     ];
     
     /**

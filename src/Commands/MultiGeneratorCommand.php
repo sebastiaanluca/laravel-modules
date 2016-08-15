@@ -90,6 +90,8 @@ abstract class MultiGeneratorCommand extends Command
         $module = $this->getModule();
         
         return (new Stub($stub, [
+            'MODULE' => $this->getFullyQualifiedName(),
+            'MODULE_TITLE' => $module->getStudlyName(),
             'MODULE_NAME' => $module->getLowerName(),
         ]))->render();
     }
@@ -98,33 +100,41 @@ abstract class MultiGeneratorCommand extends Command
      * Get the destination file path.
      *
      * @param string $type
-     * @param string $extension
      *
      * @return string
      */
-    protected function getDestinationFilePathFor($type, $extension)
+    protected function getDestinationFilePathFor($type)
     {
         $module = $this->getModule();
         
         $path = $this->laravel['modules']->getModulePath($module->getFullyQualifiedName());
         $target = $this->laravel['modules']->config('paths.generator.' . $type);
         
-        return "{$path}/{$target}/{$module->getLowerName()}.{$extension}";
+        if (! is_array($target)) {
+            $target = ['directory' => $target];
+        }
+        
+        $directory = array_get($target, 'directory', '');
+        $name = array_get($target, 'name', $module->getLowerName());
+        $extension = array_get($target, 'extension', '.php');
+        
+        return "{$path}/{$directory}/{$name}{$extension}";
     }
     
     
     /**
      * @param string $type
-     * @param string $stub
-     * @param string $extension
+     * @param string $defaultSource
      */
-    protected function generateFile($type, $stub, $extension)
+    protected function generateFile($type, $defaultSource)
     {
-        $path = str_replace('\\', '/', $this->getDestinationFilePathFor($type, $extension));
+        $path = str_replace('\\', '/', $this->getDestinationFilePathFor($type));
         
         if (! $this->laravel['files']->isDirectory($dir = dirname($path))) {
             $this->laravel['files']->makeDirectory($dir, 0777, true);
         }
+        
+        $stub = $this->laravel['modules']->config('paths.sources.' . $type, $defaultSource);
         
         $contents = $this->getTemplateContentsFor($stub);
         
@@ -142,8 +152,8 @@ abstract class MultiGeneratorCommand extends Command
      */
     public function fire()
     {
-        foreach ($this->files as $type => list($stub, $extension)) {
-            $this->generateFile($type, $stub, $extension);
+        foreach ($this->files as $type => $defaultSource) {
+            $this->generateFile($type, $defaultSource);
         }
     }
 }

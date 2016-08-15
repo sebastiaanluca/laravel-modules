@@ -88,6 +88,10 @@ class Stub
      */
     public function getPath()
     {
+        if(path_is_absolute($this->path)){
+            return $this->path;
+        }
+        
         return static::getBasePath() . $this->path;
     }
 
