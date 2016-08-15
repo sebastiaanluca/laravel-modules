@@ -395,13 +395,14 @@ class Repository implements RepositoryInterface, Countable
     /**
      * Get a specific config data from a configuration file.
      *
-     * @param $key
+     * @param string $key
+     * @param string|null $default
      *
      * @return mixed
      */
-    public function config($key)
+    public function config($key, $default = null)
     {
-        return $this->app['config']->get('modules.' . $key);
+        return $this->app['config']->get('modules.' . $key, $default);
     }
     
     /**
