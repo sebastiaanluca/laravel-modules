@@ -460,6 +460,14 @@ class ModuleGenerator extends Generator
         //            'controller' => $this->getName() . 'Controller',
         //            'module' => $this->getName(),
         //        ]);
+    
+        $this->console->call('module:make:views', [
+            'module' => $this->getFullyQualifiedName(),
+        ]);
+    
+        $this->console->call('module:make:assets', [
+            'module' => $this->getFullyQualifiedName(),
+        ]);
     }
     
     /**
