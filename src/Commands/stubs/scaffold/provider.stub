@@ -6,5 +6,8 @@ use Nwidart\Modules\Providers\ModuleServiceProvider;
 
 class $CLASS$ extends ModuleServiceProvider
 {
+    /**
+     * @var string
+     */
     protected $module = '$FQN$';
 }

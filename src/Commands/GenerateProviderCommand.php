@@ -75,7 +75,7 @@ class GenerateProviderCommand extends GeneratorCommand
         
         $module = $this->laravel['modules']->findOrFail($this->getFullyQualifiedName());
         
-        return (new Stub('/' . $stub . '.stub', [
+        return (new Stub($stub . '.stub', [
             'FQN' => $this->getFullyQualifiedName(),
             'STUDLY_NAME' => $module->getStudlyName(),
             'NAMESPACE' => $this->getClassNamespace($module),

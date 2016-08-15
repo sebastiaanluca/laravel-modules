@@ -96,7 +96,7 @@ class ModuleGenerator extends Generator
     protected function getStubContents($stub)
     {
         return (new Stub(
-            '/' . $stub . '.stub',
+            $stub . '.stub',
             $this->getReplacement($stub))
         )->render();
     }
