@@ -7,6 +7,7 @@ use Nwidart\Modules\Exceptions\FileAlreadyExistException;
 use Nwidart\Modules\Generators\FileGenerator;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
+use Symfony\Component\Console\Input\InputArgument;
 
 abstract class MultiGeneratorCommand extends Command
 {
@@ -27,6 +28,57 @@ abstract class MultiGeneratorCommand extends Command
     protected $files = [];
     
     /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            ['module', InputArgument::REQUIRED, 'The name of the module to create the controller in.'],
+        ];
+    }
+    
+    /**
+     * Get class name.
+     *
+     * @return string
+     */
+    protected function getClass()
+    {
+        return class_basename($this->argument($this->argumentName));
+    }
+    
+    /**
+     * Get default namespace.
+     *
+     * @return string
+     */
+    protected function getDefaultNamespace()
+    {
+        return '';
+    }
+    
+    /**
+     * Get class namespace.
+     *
+     * @param \Nwidart\Modules\Module $module
+     *
+     * @return string
+     */
+    protected function getClassNamespace($module)
+    {
+        $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
+        $extra = str_replace('/', '\\', $extra);
+        
+        $namespace = $module->getNamespace();
+        $namespace .= '\\' . $this->getDefaultNamespace();
+        $namespace .= '\\' . $extra;
+        
+        return trim($namespace, '\\');
+    }
+    
+    /**
      * Get template contents.
      *
      * @param string $stub
@@ -36,7 +88,7 @@ abstract class MultiGeneratorCommand extends Command
     protected function getTemplateContentsFor($stub)
     {
         $module = $this->getModule();
-    
+        
         return (new Stub($stub, [
             'MODULE_NAME' => $module->getLowerName(),
         ]))->render();
@@ -83,45 +135,6 @@ abstract class MultiGeneratorCommand extends Command
         } catch (FileAlreadyExistException $e) {
             $this->error("File : {$path} already exists.");
         }
-    }
-    
-    /**
-     * Get class name.
-     *
-     * @return string
-     */
-    public function getClass()
-    {
-        return class_basename($this->argument($this->argumentName));
-    }
-    
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace()
-    {
-        return '';
-    }
-    
-    /**
-     * Get class namespace.
-     *
-     * @param \Nwidart\Modules\Module $module
-     *
-     * @return string
-     */
-    public function getClassNamespace($module)
-    {
-        $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
-        $extra = str_replace('/', '\\', $extra);
-        
-        $namespace = $module->getNamespace();
-        $namespace .= '\\' . $this->getDefaultNamespace();
-        $namespace .= '\\' . $extra;
-        
-        return trim($namespace, '\\');
     }
     
     /**
