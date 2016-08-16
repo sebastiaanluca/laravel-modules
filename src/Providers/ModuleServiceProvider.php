@@ -5,13 +5,10 @@ namespace Nwidart\Modules\Providers;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
-use SebastiaanLuca\Helpers\Classes\ReflectionTrait;
 
 // TODO: check if directories/files exist before using them
 abstract class ModuleServiceProvider extends ServiceProvider
 {
-    use ReflectionTrait;
-    
     /**
      * The (preferably lowercase) module name to use when publishing packages or loading resources.
      *
@@ -20,13 +17,32 @@ abstract class ModuleServiceProvider extends ServiceProvider
     protected $module = '';
     
     /**
+     * @var \Nwidart\Modules\Module
+     */
+    protected $instance;
+    
+    /**
+     * Get the root path of the module.
+     *
+     * @return string
+     */
+    protected function getModulePath()
+    {
+        if (! $this->instance) {
+            $this->instance = app('modules')->findOrFail($this->module);
+        }
+        
+        return $this->instance->getPath();
+    }
+    
+    /**
      * Automatically register and merge all configuration files found in the package with the ones
      * published by the user.
      */
     protected function registerConfiguration()
     {
         $files = app('Illuminate\Filesystem\Filesystem');
-        $directory = $this->getClassDirectory() . '/../config';
+        $directory = $this->getModulePath() . '/config';
         
         // Our package configuration files
         $configurations = $files->files($directory);
@@ -48,10 +64,10 @@ abstract class ModuleServiceProvider extends ServiceProvider
     protected function bootResources()
     {
         // Load package views
-        $this->loadViewsFrom($this->getClassDirectory() . '/../resources/views', $this->module);
+        $this->loadViewsFrom($this->getModulePath() . '/resources/views', $this->module);
         
         // Load package translations
-        $this->loadTranslationsFrom($this->getClassDirectory() . '/../resources/lang', $this->module);
+        $this->loadTranslationsFrom($this->getModulePath() . '/resources/lang', $this->module);
     }
     
     /**
@@ -61,23 +77,23 @@ abstract class ModuleServiceProvider extends ServiceProvider
     {
         // Specify what the user can publish
         $this->publishes([
-            $this->getClassDirectory() . '/../config' => config_path($this->module)
+            $this->getModulePath() . '/config' => config_path($this->module)
         ], 'config');
         
         $this->publishes([
-            $this->getClassDirectory() . '/../database/migrations' => database_path('migrations')
+            $this->getModulePath() . '/database/migrations' => database_path('migrations')
         ], 'migrations');
         
         $this->publishes([
-            $this->getClassDirectory() . '/../resources/views' => base_path('resources/views/vendor/' . $this->module),
+            $this->getModulePath() . '/resources/views' => base_path('resources/views/vendor/' . $this->module),
         ], 'views');
         
         $this->publishes([
-            $this->getClassDirectory() . '/../resources/lang' => base_path('resources/lang/vendor/' . $this->module),
+            $this->getModulePath() . '/resources/lang' => base_path('resources/lang/vendor/' . $this->module),
         ], 'translations');
         
         $this->publishes([
-            $this->getClassDirectory() . '/../resources/public' => public_path('vendor/' . $this->module),
+            $this->getModulePath() . '/resources/public' => public_path('vendor/' . $this->module),
         ], 'public');
     }
     
