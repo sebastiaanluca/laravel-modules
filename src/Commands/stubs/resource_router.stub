@@ -2,10 +2,10 @@
 
 namespace $CLASS_NAMESPACE$;
 
-use SebastiaanLuca\Router\Routers\BaseRouter;
+use SebastiaanLuca\Router\Routers\Router;
 use $MODULE_NAMESPACE$\Http\Controllers\$CONTROLLER$;
 
-class $CLASS$ extends BaseRouter
+class $CLASS$ extends Router
 {
     /**
      * Map the routes.
