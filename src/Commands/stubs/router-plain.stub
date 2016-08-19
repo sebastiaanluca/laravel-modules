@@ -1,0 +1,18 @@
+<?php
+
+namespace $CLASS_NAMESPACE$;
+
+use SebastiaanLuca\Router\Routers\Router;
+
+class $CLASS$ extends Router
+{
+    /**
+     * Map the routes.
+     */
+    public function map()
+    {
+        $this->router->group(['middleware' => 'web'], function () {
+            //
+        });
+    }
+}

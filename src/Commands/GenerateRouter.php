@@ -5,9 +5,8 @@ namespace Nwidart\Modules\Commands;
 use Nwidart\Modules\Module;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
-use Symfony\Component\Console\Input\InputArgument;
 
-class GenerateResourceRouter extends GeneratorCommand
+class GenerateRouter extends GeneratorCommand
 {
     use ModuleCommandTrait;
     
@@ -17,30 +16,30 @@ class GenerateResourceRouter extends GeneratorCommand
     protected $argumentName = 'resource';
     
     /**
-     * The command name.
+     * The name and signature of the console command.
      *
      * @var string
      */
-    protected $name = 'module:make:resource-router';
+    protected $signature = 'module:make:router 
+                            {resource : The singular name of the resource or the individual name of the router} 
+                            {module? : The name of the module to create the controller in} 
+                            {--plain : Create an empty router}';
     
     /**
      * The command description.
      *
      * @var string
      */
-    protected $description = 'Generate a new resource router.';
+    protected $description = 'Generate a new router.';
     
     /**
-     * The command arguments.
+     * Get the stub file name.
      *
-     * @return array
+     * @return string
      */
-    protected function getArguments()
+    protected function getStubName()
     {
-        return [
-            ['resource', InputArgument::REQUIRED, 'The singular name of the resource.'],
-            ['module', InputArgument::OPTIONAL, 'The name of the module.'],
-        ];
+        return $this->option('plain') ? 'router-plain.stub' : 'router.stub';
     }
     
     /**
@@ -78,7 +77,7 @@ class GenerateResourceRouter extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getFullyQualifiedName());
         $resource = strtolower($this->argument($this->argumentName));
         
-        return (new Stub('resource_router.stub', [
+        return (new Stub($this->getStubName(), [
             'CLASS_NAMESPACE' => $this->getClassNamespace($module),
             'MODULE_NAMESPACE' => $module->getNamespace(),
             'CONTROLLER' => studly_case($resource) . 'Controller',

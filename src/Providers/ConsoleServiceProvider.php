@@ -8,7 +8,7 @@ use Nwidart\Modules\Commands\GenerateDefaultScripts;
 use Nwidart\Modules\Commands\GenerateDefaultViews;
 use Nwidart\Modules\Commands\GenerateProviderCommand;
 use Nwidart\Modules\Commands\GenerateResource;
-use Nwidart\Modules\Commands\GenerateResourceRouter;
+use Nwidart\Modules\Commands\GenerateRouter;
 use Nwidart\Modules\Commands\GenerateResourceViews;
 use Nwidart\Modules\Commands\MakeCommand;
 
@@ -23,16 +23,16 @@ class ConsoleServiceProvider extends ServiceProvider
      */
     protected $commands = [
         MakeCommand::class,
-        
+    
         GenerateProviderCommand::class,
         ControllerCommand::class,
         GenerateDefaultViews::class,
         GenerateDefaultScripts::class,
-        
+    
         GenerateResource::class,
-        GenerateResourceRouter::class,
+        GenerateRouter::class,
         GenerateResourceViews::class,
-        
+    
         //        CommandCommand::class,
         //        DisableCommand::class,
         //        EnableCommand::class,
