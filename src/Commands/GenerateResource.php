@@ -3,16 +3,17 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputArgument;
 
 class GenerateResource extends Command
 {
     /**
-     * The command name.
+     * The name and signature of the console command.
      *
      * @var string
      */
-    protected $name = 'module:make:resource';
+    protected $signature = 'module:make:resource
+                            {resource : The singular name of the resource}
+                            {module? : The name of the module to create the controller in}';
     
     /**
      * The command description.
@@ -22,31 +23,18 @@ class GenerateResource extends Command
     protected $description = 'Generate all assets for a new resource.';
     
     /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            ['resource', InputArgument::REQUIRED, 'The singular name of the resource.'],
-            ['module', InputArgument::REQUIRED, 'The name of the module to create the controller in.'],
-        ];
-    }
-    
-    /**
      * Execute the console command.
      */
     public function fire()
     {
         // TODO: create resource, repo, … based on migration
         
-        $this->call('module:make:resource-controller', [
+        $this->call('module:make:controller', [
             'resource' => $this->argument('resource'),
             'module' => $this->argument('module'),
         ]);
         
-        $this->call('module:make:resource-router', [
+        $this->call('module:make:router', [
             'resource' => $this->argument('resource'),
             'module' => $this->argument('module'),
         ]);
@@ -56,6 +44,6 @@ class GenerateResource extends Command
             'module' => $this->argument('module'),
         ]);
         
-        $this->info('Now register your resource router in the <mapRoutes> method of your module service provider.');
+        $this->info('Now register your resource router in the "mapRoutes" method of your module service provider.');
     }
 }
