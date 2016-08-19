@@ -22,7 +22,7 @@ class MakeCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Generate new module.';
+    protected $description = 'Generate a new module.';
     
     /**
      * Get the console command arguments.
@@ -36,6 +36,11 @@ class MakeCommand extends Command
         ];
     }
     
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
     protected function getOptions()
     {
         return [
@@ -44,6 +49,11 @@ class MakeCommand extends Command
         ];
     }
     
+    /**
+     * @param string $name
+     *
+     * @throws \Exception
+     */
     protected function validateName($name)
     {
         if (count(explode('/', $name)) === 2) {
@@ -76,5 +86,7 @@ class MakeCommand extends Command
                 ->setPlain($this->option('plain'))
                 ->generate();
         }
+    
+        $this->info('To use the module, add the service provider to your app.php configuration file and register it in composer.json to enable autoloading.');
     }
 }
