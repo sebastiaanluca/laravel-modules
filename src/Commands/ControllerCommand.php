@@ -4,7 +4,6 @@ namespace Nwidart\Modules\Commands;
 
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
-use Symfony\Component\Console\Input\InputArgument;
 
 class ControllerCommand extends GeneratorCommand
 {
@@ -18,11 +17,14 @@ class ControllerCommand extends GeneratorCommand
     protected $argumentName = 'resource';
     
     /**
-     * The console command name.
+     * The name and signature of the console command.
      *
      * @var string
      */
-    protected $name = 'module:make:resource-controller';
+    protected $signature = 'module:make:controller 
+                            {resource : The singular name of the resource} 
+                            {module? : The name of the module to create the controller in} 
+                            {--plain : Create an empty controller instead of one with CRUD methods}';
     
     /**
      * The console command description.
@@ -38,7 +40,7 @@ class ControllerCommand extends GeneratorCommand
      */
     protected function getStubName()
     {
-        return 'controller.stub';
+        return $this->option('plain') ? 'controller-plain.stub' : 'controller.stub';
     }
     
     /**
@@ -54,19 +56,6 @@ class ControllerCommand extends GeneratorCommand
             'MODULE' => $this->getFullyQualifiedName(),
             'RESOURCE' => strtolower($this->argument($this->argumentName) . 's'),
         ]))->render();
-    }
-    
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [
-            [$this->argumentName, InputArgument::REQUIRED, 'The singular name of the resource.'],
-            ['module', InputArgument::OPTIONAL, 'The name of the module to create the controller in.'],
-        ];
     }
     
     /**
