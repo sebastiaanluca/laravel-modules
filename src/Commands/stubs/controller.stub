@@ -18,7 +18,7 @@ class $CLASS$ extends Controller
     {
         return view('$MODULE$::pages/$RESOURCE$/index');
     }
-
+    
     /**
      * Show the view for creating a new resource.
      * 
@@ -28,7 +28,7 @@ class $CLASS$ extends Controller
     {
         return view('$MODULE$::pages/$RESOURCE$/create');
     }
-
+    
     /**
      * Create a new resource.
      * 
@@ -40,7 +40,20 @@ class $CLASS$ extends Controller
     {
         return redirect()->route('$RESOURCE$.index');
     }
-
+    
+    /**
+     * View a resource.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @param string $id
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function show(Request $request, string $id) : View
+    {
+        return view('$MODULE$::pages/$RESOURCE$/show');
+    }
+    
     /**
      * Show the view for editing the given resource.
      *
@@ -52,7 +65,7 @@ class $CLASS$ extends Controller
     {
         return view('$MODULE$::pages/$RESOURCE$/edit');
     }
-
+    
     /**
      * Update the given resource.
      * 
@@ -65,7 +78,7 @@ class $CLASS$ extends Controller
     {
         return redirect()->route('$RESOURCE$.show', $id);
     }
-
+    
     /**
      * Delete the given resource.
      * 
