@@ -16,17 +16,17 @@ class LaravelModulesServiceProvider extends ServiceProvider
      * @var bool
      */
     protected $defer = false;
-
+    
     /**
-     * Booting the package.
+     * Publish required front-end build assets to the root app directory.
      */
-    public function boot()
+    protected function registerPublishableResources()
     {
-        $this->registerNamespaces();
-
-        $this->registerModules();
+        $this->publishes([
+            __DIR__ . '/../resources' => app_path(),
+        ], 'build-scripts');
     }
-
+    
     /**
      * Register all modules.
      */
@@ -34,31 +34,7 @@ class LaravelModulesServiceProvider extends ServiceProvider
     {
         $this->app->register(BootstrapServiceProvider::class);
     }
-
-    /**
-     * Register the service provider.
-     */
-    public function register()
-    {
-        $this->registerServices();
-        $this->setupStubPath();
-        $this->registerProviders();
-    }
-
-    /**
-     * Setup stub path.
-     */
-    public function setupStubPath()
-    {
-        $this->app->booted(function ($app) {
-            Stub::setBasePath(__DIR__ . '/Commands/stubs');
-
-            if ($app['modules']->config('stubs.enabled') === true) {
-                Stub::setBasePath($app['modules']->config('stubs.path') ?: __DIR__ . '/Commands/stubs');
-            }
-        });
-    }
-
+    
     /**
      * Register package's namespaces.
      */
@@ -70,7 +46,7 @@ class LaravelModulesServiceProvider extends ServiceProvider
             $configPath => config_path('modules.php'),
         ], 'config');
     }
-
+    
     /**
      * Register the service provider.
      */
@@ -78,11 +54,55 @@ class LaravelModulesServiceProvider extends ServiceProvider
     {
         $this->app->singleton('modules', function ($app) {
             $path = $app['config']->get('modules.paths.modules');
-
+            
             return new Repository($app, $path);
         });
     }
-
+    
+    /**
+     * Register providers.
+     */
+    protected function registerProviders()
+    {
+        $this->app->register(ConsoleServiceProvider::class);
+        $this->app->register(ContractsServiceProvider::class);
+    }
+    
+    /**
+     * Booting the package.
+     */
+    public function boot()
+    {
+        $this->registerNamespaces();
+        
+        $this->registerModules();
+    }
+    
+    /**
+     * Register the service provider.
+     */
+    public function register()
+    {
+        $this->registerServices();
+        $this->setupStubPath();
+        $this->registerProviders();
+        $this->registerPublishableResources();
+    }
+    
+    /**
+     * Setup stub path.
+     */
+    public function setupStubPath()
+    {
+        $this->app->booted(function ($app) {
+            Stub::setBasePath(__DIR__ . '/Commands/stubs');
+            
+            if ($app['modules']->config('stubs.enabled') === true) {
+                Stub::setBasePath($app['modules']->config('stubs.path') ?: __DIR__ . '/Commands/stubs');
+            }
+        });
+    }
+    
     /**
      * Get the services provided by the provider.
      *
@@ -91,14 +111,5 @@ class LaravelModulesServiceProvider extends ServiceProvider
     public function provides()
     {
         return ['modules'];
-    }
-
-    /**
-     * Register providers.
-     */
-    protected function registerProviders()
-    {
-        $this->app->register(ConsoleServiceProvider::class);
-        $this->app->register(ContractsServiceProvider::class);
     }
 }

@@ -654,6 +654,50 @@ You can follow this step to publish your module.
 3. Submit your module to the packagist website.
 Submit to packagist is very easy, just give your github repository, click submit and you done.
 
+## Front-end build scripts
+
+### Publishing
+
+To build front-end assets, you need to copy the build scripts into your root application directory first:
+
+`php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider" --tag="build-scripts"`
+
+Afterwards, run `gulp`, `gulp hot`, or `gulp watch` to build all of your module's (found in /modules) assets.
+
+### Customizing
+
+An example of a root webpack configuration file providing support for jQuery and lodash, excluding vendor files, etc:
+
+```
+/**
+ * Webpack entry point, loading default settings. Can be adjusted as desired.
+ */
+
+const webpack = require('webpack')
+const _ = require('lodash')
+
+// Our base webpack configuration file
+const config = require('./vendor/nwidart/laravel-modules/scripts/webpack.config')
+
+// Exclude non-JS modules from being used in vendors.js
+const excludedVendors = [
+    'font-awesome',
+]
+
+config.entry.vendors = _.pullAll(config.entry.vendors, excludedVendors);
+
+// Provide global support for vendor libraries
+config.plugins.push(new webpack.ProvidePlugin({
+    $: 'jquery',
+    jQuery: 'jquery',
+}))
+
+config.plugins.push(new webpack.ProvidePlugin({
+    _: 'lodash',
+}))
+
+module.exports = config 
+```
 
 ## Credits
 
