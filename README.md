@@ -29,6 +29,10 @@ With one big added bonus that the original package didn't have: **tests**.
 
 Find out why you should use this package in the article: [Writing modular applications with laravel-modules](https://nicolaswidart.com/blog/writing-modular-applications-with-laravel-modules).
 
+## Laravel Version
+
+This fork of `nwidart/laravel-modules` requires Laravel 5.3 or higher.
+
 <a name="upgrade-guide"></a>
 ## Upgrade Guide
 
