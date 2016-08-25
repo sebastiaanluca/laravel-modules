@@ -63,10 +63,8 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     protected function bootResources()
     {
-        // Load package views
+        $this->loadMigrationsFrom($this->getModulePath() . '/database/migrations');
         $this->loadViewsFrom($this->getModulePath() . '/resources/views', $this->module);
-        
-        // Load package translations
         $this->loadTranslationsFrom($this->getModulePath() . '/resources/lang', $this->module);
     }
     
@@ -75,26 +73,9 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     protected function registerPublishableResources()
     {
-        // Specify what the user can publish
         $this->publishes([
             $this->getModulePath() . '/config' => config_path($this->module)
         ], 'config');
-        
-        $this->publishes([
-            $this->getModulePath() . '/database/migrations' => database_path('migrations')
-        ], 'migrations');
-        
-        $this->publishes([
-            $this->getModulePath() . '/resources/views' => base_path('resources/views/vendor/' . $this->module),
-        ], 'views');
-        
-        $this->publishes([
-            $this->getModulePath() . '/resources/lang' => base_path('resources/lang/vendor/' . $this->module),
-        ], 'translations');
-        
-        $this->publishes([
-            $this->getModulePath() . '/resources/public' => public_path('vendor/' . $this->module),
-        ], 'public');
     }
     
     /**
