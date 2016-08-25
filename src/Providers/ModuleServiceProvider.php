@@ -5,26 +5,16 @@ namespace Nwidart\Modules\Providers;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
-use SebastiaanLuca\Helpers\Classes\ReflectionTrait;
 
 // TODO: check if directories/files exist before using them
 abstract class ModuleServiceProvider extends ServiceProvider
 {
-    use ReflectionTrait;
-    
     /**
      * The (preferably lowercase) module name to use when publishing packages or loading resources.
      *
      * @var string
      */
     protected $module = '';
-    
-    /**
-     * Depicts a module that functions independently from application modules (more like a package).
-     *
-     * @var bool
-     */
-    protected $isStandalone = false;
     
     /**
      * @var \Nwidart\Modules\Module
@@ -38,11 +28,6 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     protected function getModulePath()
     {
-        // Module is not handled by module manager
-        if ($this->isStandalone) {
-            return $this->getClassDirectory() . '/..';
-        }
-        
         if (! $this->instance) {
             $this->instance = app('modules')->findOrFail($this->module);
         }
