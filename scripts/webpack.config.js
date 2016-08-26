@@ -8,22 +8,24 @@ const autoprefixer = require('autoprefixer')
 const WebpackCleanupPlugin = require('webpack-cleanup-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
-var SingleModuleInstancePlugin = require('single-module-instance-webpack-plugin');
+var SingleModuleInstancePlugin = require('single-module-instance-webpack-plugin')
 
 // Specific Laravel module implementation for resources
 const Modules = require('./modules')
 
-const context = (context) => process.env.WEBPACK_CONTEXT === context
+// Compares the given desired environment/context with the active environment (watch, hot, production, ...)
+const isContext = (context) => process.env.WEBPACK_CONTEXT === context
+
 const target = 'public/assets'
 
-const extractStyles = new ExtractTextPlugin(context('production') ? 'styles/[name]-[hash].css' : 'styles/[name].css');
+const extractStyles = new ExtractTextPlugin(isContext('production') ? 'styles/[name]-[hash].css' : 'styles/[name].css')
 
 const config = {
     
-    debug: ! context('production'),
+    debug: ! isContext('production'),
     
     // Sourcemaps, etc.
-    devtool: context('production') ? false : 'eval',
+    devtool: isContext('production') ? false : 'eval',
     
     // Context is an absolute path to the directory where webpack will be
     // looking for our entry points
@@ -45,10 +47,10 @@ const config = {
         
         // A filename pattern for the output files. This would create 
         // `global.js` and `portfolio.js`
-        filename: 'scripts/' + (context('production') ? '[name]-[hash].js' : '[name].js'),
+        filename: 'scripts/' + (isContext('production') ? '[name]-[hash].js' : '[name].js'),
         
         // A filename pattern for generated chunks
-        chunkFilename: 'scripts/' + (context('production') ? '[name]-[chunkhash].js' : '[name].js'),
+        chunkFilename: 'scripts/' + (isContext('production') ? '[name]-[chunkhash].js' : '[name].js'),
         
         // Used by modules to define the root path of the assets
         publicPath: '/assets/',
@@ -171,7 +173,7 @@ const config = {
 config.entry = Object.assign(config.entry, Modules())
 
 // Don't run when watching or serving content to prevent errors
-if (! context('watch') && ! context('hot')) {
+if (! isContext('watch') && ! isContext('hot')) {
     config.plugins = config.plugins.concat([
         new WebpackCleanupPlugin({
             exclude: ['.gitignore']
@@ -180,14 +182,8 @@ if (! context('watch') && ! context('hot')) {
 }
 
 // Optimize order and uglify JS in production
-if (context('production')) {
+if (isContext('production')) {
     config.plugins = config.plugins.concat([
-        new webpack.DefinePlugin({
-            'process.env': {
-                'NODE_ENV': 'production',
-            },
-        }),
-        
         // This plugins optimizes chunks and modules by
         // how much they are used in your app
         new webpack.optimize.OccurenceOrderPlugin(),
@@ -234,6 +230,6 @@ config.devServer = {
         aggregateTimeout: 20,
         poll: 1000
     },
-};
+}
 
 module.exports = config

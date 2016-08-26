@@ -24,8 +24,15 @@ require('./build')
 //
 
 gulp.task('default', callback => {
-    if (gutil.env.production) {
+    // Set the context for the rest of the build scripts to use.
+    // Try to get this information from the .env file first.
+    // Gutil gets its "production" value from the command line. It's
+    // set to true when the "--production" option is given when 
+    // executing the command.
+    if (['production', 'staging'].indexOf(process.env.APP_ENV) !== -1 || gutil.env.production) {
         config.context = 'production'
+    
+        gutil.log('Build environment set to <production>')
     }
     
     gulp.start(['clean', 'webpack'], callback)
