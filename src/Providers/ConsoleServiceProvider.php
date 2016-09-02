@@ -8,9 +8,10 @@ use Nwidart\Modules\Commands\GenerateDefaultScripts;
 use Nwidart\Modules\Commands\GenerateDefaultViews;
 use Nwidart\Modules\Commands\GenerateProviderCommand;
 use Nwidart\Modules\Commands\GenerateResource;
-use Nwidart\Modules\Commands\GenerateRouter;
 use Nwidart\Modules\Commands\GenerateResourceViews;
+use Nwidart\Modules\Commands\GenerateRouter;
 use Nwidart\Modules\Commands\MakeCommand;
+use Nwidart\Modules\Commands\MigrationCommand;
 
 class ConsoleServiceProvider extends ServiceProvider
 {
@@ -23,16 +24,18 @@ class ConsoleServiceProvider extends ServiceProvider
      */
     protected $commands = [
         MakeCommand::class,
-    
+        
         GenerateProviderCommand::class,
         ControllerCommand::class,
         GenerateDefaultViews::class,
         GenerateDefaultScripts::class,
-    
+        
         GenerateResource::class,
         GenerateRouter::class,
         GenerateResourceViews::class,
-    
+        
+        MigrationCommand::class,
+        
         //        CommandCommand::class,
         //        DisableCommand::class,
         //        EnableCommand::class,
@@ -46,7 +49,6 @@ class ConsoleServiceProvider extends ServiceProvider
         //        MigrateRefreshCommand::class,
         //        MigrateResetCommand::class,
         //        MigrateRollbackCommand::class,
-        //        MigrationCommand::class,
         //        ModelCommand::class,
         //        PublishCommand::class,
         //        PublishMigrationCommand::class,
