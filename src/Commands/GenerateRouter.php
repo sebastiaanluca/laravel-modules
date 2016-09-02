@@ -22,7 +22,7 @@ class GenerateRouter extends GeneratorCommand
      */
     protected $signature = 'module:make:router 
                             {resource : The singular name of the resource or the individual name of the router} 
-                            {module? : The name of the module to create the controller in} 
+                            {module? : The name of the module to create the router in} 
                             {--plain : Create an empty router}';
     
     /**
