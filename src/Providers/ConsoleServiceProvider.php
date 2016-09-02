@@ -61,6 +61,20 @@ class ConsoleServiceProvider extends ServiceProvider
         //        DumpCommand::class,
         //        MakeRequestCommand::class,
         //        PublishConfigurationCommand::class,
+        //        ModelCommand::class,
+        //        PublishCommand::class,
+        //        PublishMigrationCommand::class,
+        //        PublishTranslationCommand::class,
+        //        SeedCommand::class,
+        //        SeedMakeCommand::class,
+        //        SetupCommand::class,
+        //        UpdateCommand::class,
+        //        UseCommand::class,
+        //        DumpCommand::class,
+        //        MakeRequestCommand::class,
+        //        PublishConfigurationCommand::class,
+        //        GenerateJobCommand::class,
+        //        GenerateMailCommand::class,
     ];
     
     /**
@@ -68,9 +82,7 @@ class ConsoleServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        foreach ($this->commands as $command) {
-            $this->commands($command);
-        }
+        $this->commands($this->commands);
     }
     
     /**
@@ -78,11 +90,7 @@ class ConsoleServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        $provides = [];
-        
-        foreach ($this->commands as $command) {
-            $provides[] = $command;
-        }
+        $provides = $this->commands;
         
         return $provides;
     }

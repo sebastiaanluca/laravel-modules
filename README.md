@@ -80,7 +80,7 @@ By default controllers, entities or repositories not loaded automatically. You c
   "autoload": {
     "psr-4": {
       "App\\": "app/",
-      "Modules\\": "modules/"
+      "Modules\\": "Modules/"
     }
   }
 }
@@ -149,7 +149,7 @@ laravel-app/
 app/
 bootstrap/
 vendor/
-modules/
+Modules/
   ├── Blog/
       ├── Assets/
       ├── Config/
