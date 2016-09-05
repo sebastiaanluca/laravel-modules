@@ -43,6 +43,16 @@ class GenerateRouter extends GeneratorCommand
     }
     
     /**
+     * Get default namespace.
+     *
+     * @return string
+     */
+    protected function getDefaultNamespace()
+    {
+        return 'Http\Routers';
+    }
+    
+    /**
      * Get the name of the router.
      *
      * @return string
@@ -84,15 +94,5 @@ class GenerateRouter extends GeneratorCommand
             'RESOURCE' => $resource,
             'CLASS' => $this->getRouterName(),
         ]))->render();
-    }
-    
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace()
-    {
-        return 'Http\Routers';
     }
 }

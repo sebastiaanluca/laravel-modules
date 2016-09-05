@@ -22,7 +22,7 @@ abstract class GeneratorCommand extends Command
      */
     protected function getTemplateContents()
     {
-        return '';   
+        return '';
     }
     
     /**
@@ -37,7 +37,7 @@ abstract class GeneratorCommand extends Command
      *
      * @return string
      */
-    public function getClass()
+    protected function getClass()
     {
         return class_basename($this->argument($this->argumentName));
     }
@@ -47,7 +47,7 @@ abstract class GeneratorCommand extends Command
      *
      * @return string
      */
-    public function getDefaultNamespace()
+    protected function getDefaultNamespace()
     {
         return '';
     }
@@ -59,7 +59,7 @@ abstract class GeneratorCommand extends Command
      *
      * @return string
      */
-    public function getClassNamespace($module)
+    protected function getClassNamespace($module)
     {
         $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
         $extra = str_replace('/', '\\', $extra);

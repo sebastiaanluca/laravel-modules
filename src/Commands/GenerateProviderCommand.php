@@ -34,14 +34,6 @@ class GenerateProviderCommand extends GeneratorCommand
     protected $description = 'Generate a new service provider for the specified module.';
     
     /**
-     * @return string
-     */
-    private function getFileName()
-    {
-        return Str::studly($this->argument('name'));
-    }
-    
-    /**
      * Get the console command arguments.
      *
      * @return array
@@ -64,6 +56,24 @@ class GenerateProviderCommand extends GeneratorCommand
         return [
             ['master', null, InputOption::VALUE_NONE, 'Indicates the master service provider', null],
         ];
+    }
+    
+    /**
+     * @return string
+     */
+    protected function getFileName()
+    {
+        return Str::studly($this->argument('name'));
+    }
+    
+    /**
+     * Get default namespace.
+     *
+     * @return string
+     */
+    protected function getDefaultNamespace()
+    {
+        return 'Providers';
     }
     
     /**
@@ -92,15 +102,5 @@ class GenerateProviderCommand extends GeneratorCommand
         $generatorPath = $this->laravel['modules']->config('paths.generator.provider');
         
         return $path . '/' . $generatorPath . '/' . $this->getFileName() . '.php';
-    }
-    
-    /**
-     * Get default namespace.
-     *
-     * @return string
-     */
-    public function getDefaultNamespace()
-    {
-        return 'Providers';
     }
 }

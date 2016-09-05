@@ -73,7 +73,7 @@ class ControllerCommand extends GeneratorCommand
      *
      * @return string
      */
-    public function getDestinationFilePath()
+    protected function getDestinationFilePath()
     {
         $path = $this->laravel['modules']->getModulePath($this->getFullyQualifiedName());
         
@@ -87,7 +87,7 @@ class ControllerCommand extends GeneratorCommand
      *
      * @return string
      */
-    public function getDefaultNamespace()
+    protected function getDefaultNamespace()
     {
         return 'Http\Controllers';
     }
