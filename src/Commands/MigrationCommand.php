@@ -3,35 +3,38 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Nwidart\Modules\Support\Migrations\NameParser;
 use Nwidart\Modules\Support\Migrations\SchemaParser;
 use Nwidart\Modules\Support\Stub;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 
 class MigrationCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
     
     /**
-     * The console command name.
+     * The name and signature of the console command.
      *
      * @var string
      */
-    protected $name = 'module:make-migration';
+    protected $signature = 'module:make:migration 
+                            {name : The name of the migration (snake case)}
+                            {module : The name of the module it should be created in}
+                            {--fields= : The fields to create}
+                            {--plain : Create a plain migration}';
     
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generate a new migration for the specified module.';
+    protected $description = 'Generate a new migration for the given module.';
     
     /**
      * @return string
      */
-    private function getFileName()
+    protected function getFileName()
     {
         return date('Y_m_d_His_') . $this->getSchemaName();
     }
@@ -39,7 +42,7 @@ class MigrationCommand extends GeneratorCommand
     /**
      * @return array|string
      */
-    private function getSchemaName()
+    protected function getSchemaName()
     {
         return $this->argument('name');
     }
@@ -47,35 +50,19 @@ class MigrationCommand extends GeneratorCommand
     /**
      * @return string
      */
-    private function getClassName()
+    protected function getClassName()
     {
         return Str::studly($this->argument('name'));
     }
     
     /**
-     * Get the console command arguments.
+     * Get class name.
      *
-     * @return array
+     * @return string
      */
-    protected function getArguments()
+    protected function getClass()
     {
-        return [
-            ['name', InputArgument::REQUIRED, 'The migration name will be created.'],
-            ['module', InputArgument::OPTIONAL, 'The name of module will be created.'],
-        ];
-    }
-    
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['fields', null, InputOption::VALUE_OPTIONAL, 'The specified fields table.', null],
-            ['plain', null, InputOption::VALUE_NONE, 'Create plain migration.'],
-        ];
+        return $this->getClassName();
     }
     
     /**
@@ -115,7 +102,17 @@ class MigrationCommand extends GeneratorCommand
             ]);
         }
         
-        throw new \InvalidArgumentException('Invalid migration name');
+        throw new InvalidArgumentException('Invalid migration name');
+    }
+    
+    /**
+     * Get schema parser.
+     *
+     * @return SchemaParser
+     */
+    protected function getSchemaParser()
+    {
+        return new SchemaParser($this->option('fields'));
     }
     
     /**
@@ -131,21 +128,6 @@ class MigrationCommand extends GeneratorCommand
     }
     
     /**
-     * Get schema parser.
-     *
-     * @return SchemaParser
-     */
-    public function getSchemaParser()
-    {
-        return new SchemaParser($this->option('fields'));
-    }
-    
-    public function getClass()
-    {
-        return $this->getClassName();
-    }
-    
-    /**
      * Run the command.
      */
     public function fire()
@@ -156,6 +138,7 @@ class MigrationCommand extends GeneratorCommand
             return;
         }
         
-//        $this->call('optimize');
+        // TODO: remove?
+        // $this->call('optimize');
     }
 }

@@ -1,28 +1,23 @@
 <?php
 
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
+use Nwidart\Modules\Migrations\TransactionalMigration as Migration;
 
-class $CLASS$ extends Migration {
-
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-	    //
-	}
-
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-	    //
-	}
-
+class $CLASS$ extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function migrateUp()
+    {
+        //
+    }
+    
+    /**
+     * Reverse the migrations.
+     */
+    public function migrateDown()
+    {
+        //
+    }
 }

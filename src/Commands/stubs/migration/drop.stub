@@ -1,33 +1,27 @@
 <?php
 
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
+use Nwidart\Modules\Migrations\TransactionalMigration as Migration;
 
-class $CLASS$ extends Migration {
-
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::drop('$TABLE$');
-	}
-
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::create('$TABLE$', function(Blueprint $table)
-		{
+class $CLASS$ extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function migrateUp()
+    {
+        Schema::drop('$TABLE$');
+    }
+    
+    /**
+     * Reverse the migrations.
+     */
+    public function migrateDown()
+    {
+        Schema::create('$TABLE$', function(Blueprint $table) {
             $table->increments('id');
 $FIELDS$
             $table->timestamps();
-		});
-	}
-
+        });
+    }
 }
