@@ -3,6 +3,7 @@
 namespace Nwidart\Modules;
 
 use Illuminate\Support\ServiceProvider;
+use Laracademy\Generators\GeneratorsServiceProvider;
 use Nwidart\Modules\Providers\BootstrapServiceProvider;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
 use Nwidart\Modules\Providers\ContractsServiceProvider;
@@ -52,7 +53,7 @@ class LaravelModulesServiceProvider extends ServiceProvider
      */
     protected function registerServices()
     {
-        $this->app->singleton('modules', function ($app) {
+        $this->app->singleton('modules', function($app) {
             $path = $app['config']->get('modules.paths.modules');
             
             return new Repository($app, $path);
@@ -87,6 +88,8 @@ class LaravelModulesServiceProvider extends ServiceProvider
         $this->setupStubPath();
         $this->registerProviders();
         $this->registerPublishableResources();
+        
+        $this->app->register(GeneratorsServiceProvider::class);
     }
     
     /**
@@ -94,7 +97,7 @@ class LaravelModulesServiceProvider extends ServiceProvider
      */
     public function setupStubPath()
     {
-        $this->app->booted(function ($app) {
+        $this->app->booted(function($app) {
             Stub::setBasePath(__DIR__ . '/Commands/stubs');
             
             if ($app['modules']->config('stubs.enabled') === true) {
