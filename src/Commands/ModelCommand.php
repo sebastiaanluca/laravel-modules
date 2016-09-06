@@ -2,8 +2,8 @@
 
 namespace Nwidart\Modules\Commands;
 
-use Illuminate\Support\Str;
 use Nwidart\Modules\Support\Stub;
+use Nwidart\Modules\Support\TableReader;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 
 class ModelCommand extends GeneratorCommand
@@ -35,24 +35,77 @@ class ModelCommand extends GeneratorCommand
     protected $description = 'Generate a new model in the given module.';
     
     /**
+     * Format a given value as a string.
+     *
+     * @param mixed $value
+     *
+     * @return string
+     */
+    protected function format($value) : string
+    {
+        if (is_array($value)) {
+            return $this->formatAsArrayContents($value);
+        }
+        
+        return '';
+    }
+    
+    /**
+     * Format a given array as a string.
+     *
+     * @param array $value
+     *
+     * @return string
+     */
+    protected function formatAsArrayContents(array $value) : string
+    {
+        $isMultiValue = count($value) > 0;
+        $isAssociative = is_assoc_array($value);
+        $indent = '    ';
+        
+        if (! $isMultiValue) {
+            return str_wrap($value[0], "'");
+        }
+        
+        $string = collect($value)->map(function($item, $key) use ($isAssociative) {
+            if ($isAssociative) {
+                return $key . "' => '" . $item;
+            }
+            
+            return $item;
+        })->map(function($item) use ($indent) {
+            return PHP_EOL . $indent . $indent . str_wrap($item, "'") . ',';
+        })->implode('');
+        
+        $string = $string . PHP_EOL . $indent;
+        
+        return $string;
+    }
+    
+    /**
      * @return mixed
      */
     protected function getTemplateContents()
     {
         $module = $this->laravel['modules']->findOrFail($this->getFullyQualifiedName());
         
-        ddd('HERE');
+        if ($table = $this->option('table')) {
+            $reader = app(TableReader::class)->read($table);
+            
+            $table = $reader->getTable();
+            $guarded = $this->format($reader->getGuarded());
+            $casts = $this->format($reader->getCasts());
+            $dates = $this->format($reader->getDates());
+        }
         
-//        return (new Stub('model.stub', [
-//            'NAME' => $this->getModelName(),
-//            'FILLABLE' => $this->getFillable(),
-//            'NAMESPACE' => $this->getClassNamespace($module),
-//            'CLASS' => $this->getClass(),
-//            'LOWER_NAME' => $module->getLowerName(),
-//            'MODULE' => $this->getModuleName(),
-//            'STUDLY_NAME' => $module->getStudlyName(),
-//            'MODULE_NAMESPACE' => $this->laravel['modules']->config('namespace'),
-//        ]))->render();
+        return (new Stub('model.stub', [
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS' => $this->getClass(),
+            'TABLE' => $table ?? '',
+            'GUARDED' => $guarded ?? '',
+            'CASTS' => $casts ?? '',
+            'DATES' => $dates ?? '',
+        ]))->render();
     }
     
     /**
@@ -66,7 +119,7 @@ class ModelCommand extends GeneratorCommand
         
         $subPath = $this->laravel['modules']->config('paths.generator.model');
         
-        return $path . '/' . $subPath . '/' . $this->getModelName() . '.php';
+        return "$path/$subPath/{$this->getModelName()}.php";
     }
     
     /**
