@@ -10,7 +10,7 @@ class $CLASS$ extends Migration
      */
     public function migrateUp()
     {
-        Schema::table('$TABLE$', function(Blueprint $table) {
+        $this->schema->table('$TABLE$', function(Blueprint $table) {
 $FIELDS_UP$
         });
     }
@@ -20,7 +20,7 @@ $FIELDS_UP$
      */
     public function migrateDown()
     {
-        Schema::table('$TABLE$', function(Blueprint $table) {
+        $this->schema->table('$TABLE$', function(Blueprint $table) {
 $FIELDS_DOWN$
         });
     }

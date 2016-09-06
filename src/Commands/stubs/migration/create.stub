@@ -10,7 +10,7 @@ class $CLASS$ extends Migration
      */
     public function migrateUp()
     {
-        Schema::create('$TABLE$', function(Blueprint $table) {
+        $this->schema->create('$TABLE$', function(Blueprint $table) {
             $table->increments('id');
 $FIELDS$
             $table->timestamps();
