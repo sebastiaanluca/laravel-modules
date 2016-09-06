@@ -12,6 +12,7 @@ use Nwidart\Modules\Commands\GenerateResourceViews;
 use Nwidart\Modules\Commands\GenerateRouter;
 use Nwidart\Modules\Commands\MakeCommand;
 use Nwidart\Modules\Commands\MigrationCommand;
+use Nwidart\Modules\Commands\ModelCommand;
 
 class ConsoleServiceProvider extends ServiceProvider
 {
@@ -35,6 +36,7 @@ class ConsoleServiceProvider extends ServiceProvider
         GenerateResourceViews::class,
         
         MigrationCommand::class,
+        ModelCommand::class,
         
         //        CommandCommand::class,
         //        DisableCommand::class,
@@ -49,7 +51,6 @@ class ConsoleServiceProvider extends ServiceProvider
         //        MigrateRefreshCommand::class,
         //        MigrateResetCommand::class,
         //        MigrateRollbackCommand::class,
-        //        ModelCommand::class,
         //        PublishCommand::class,
         //        PublishMigrationCommand::class,
         //        PublishTranslationCommand::class,
@@ -61,7 +62,6 @@ class ConsoleServiceProvider extends ServiceProvider
         //        DumpCommand::class,
         //        MakeRequestCommand::class,
         //        PublishConfigurationCommand::class,
-        //        ModelCommand::class,
         //        PublishCommand::class,
         //        PublishMigrationCommand::class,
         //        PublishTranslationCommand::class,
