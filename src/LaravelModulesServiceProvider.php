@@ -88,8 +88,6 @@ class LaravelModulesServiceProvider extends ServiceProvider
         $this->setupStubPath();
         $this->registerProviders();
         $this->registerPublishableResources();
-        
-        $this->app->register(GeneratorsServiceProvider::class);
     }
     
     /**
