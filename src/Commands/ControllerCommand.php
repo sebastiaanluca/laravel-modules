@@ -59,16 +59,6 @@ class ControllerCommand extends GeneratorCommand
     }
     
     /**
-     * Get the resource controller name.
-     *
-     * @return string
-     */
-    protected function getControllerName()
-    {
-        return studly_case($this->argument($this->argumentName)) . 'Controller';
-    }
-    
-    /**
      * Get the destination file path.
      *
      * @return string
@@ -80,6 +70,16 @@ class ControllerCommand extends GeneratorCommand
         $controllerPath = $this->laravel['modules']->config('paths.generator.controller');
         
         return $path . '/' . $controllerPath . '/' . $this->getControllerName() . '.php';
+    }
+    
+    /**
+     * Get the resource controller name.
+     *
+     * @return string
+     */
+    protected function getControllerName()
+    {
+        return studly_case($this->argument($this->argumentName)) . 'Controller';
     }
     
     /**
