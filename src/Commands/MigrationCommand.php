@@ -3,7 +3,6 @@
 namespace Nwidart\Modules\Commands;
 
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 use Nwidart\Modules\Support\Migrations\NameParser;
 use Nwidart\Modules\Support\Migrations\SchemaParser;
 use Nwidart\Modules\Support\Stub;
@@ -66,8 +65,6 @@ class MigrationCommand extends GeneratorCommand
     }
     
     /**
-     * @throws \InvalidArgumentException
-     *
      * @return mixed
      */
     protected function getTemplateContents()
@@ -102,7 +99,12 @@ class MigrationCommand extends GeneratorCommand
             ]);
         }
         
-        throw new InvalidArgumentException('Invalid migration name');
+        return Stub::create('migration/add.stub', [
+            'class' => $this->getClass(),
+            'table' => $parser->getTableName(),
+            'fields_up' => $this->getSchemaParser()->up(),
+            'fields_down' => $this->getSchemaParser()->down(),
+        ]);
     }
     
     /**
