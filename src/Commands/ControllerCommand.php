@@ -58,18 +58,21 @@ class ControllerCommand extends GeneratorCommand
      */
     protected function getTemplateContents()
     {
-        
         $module = $this->laravel['modules']->findOrFail($this->getFullyQualifiedName());
         
-        $constructor = $this->getTemplateConstructor();
+        if ($this->option('repository')) {
+            $this->imports[] = $this->getRepositoryClassName();
+        }
         
         return (new Stub($this->getStubName(), [
             'CLASS_NAMESPACE' => $this->getClassNamespace($module),
             'CLASS' => $this->getControllerName(),
             'MODULE' => $this->getFullyQualifiedName(),
-            'RESOURCE' => strtolower($this->argument($this->argumentName) . 's'),
+            'RESOURCE' => strtolower(str_plural($this->argument($this->argumentName))),
+            'RESOURCE_SINGULAR' => strtolower($this->argument($this->argumentName)),
             'IMPORTS' => $this->getTemplateImports(),
-            'CONSTRUCTOR' => $constructor,
+            'REPOSITORY' => class_basename($this->getRepositoryClassName()),
+            'NAMESPACED_REPOSITORY' => $this->getRepositoryClassName(),
         ]))->render();
     }
     
@@ -80,7 +83,15 @@ class ControllerCommand extends GeneratorCommand
      */
     protected function getStubName()
     {
-        return $this->option('plain') ? 'controller-plain.stub' : 'controller.stub';
+        if ($this->option('plain')) {
+            return 'controller-plain.stub';
+        }
+        
+        if ($this->option('repository')) {
+            return 'controller-repository.stub';
+        }
+        
+        return 'controller.stub';
     }
     
     /**
@@ -118,35 +129,8 @@ class ControllerCommand extends GeneratorCommand
      *
      * @return string
      */
-    protected function getTemplateConstructor()
+    protected function getRepositoryClassName()
     {
-        if (! $this->option('repository')) {
-            return '';
-        }
-        
-        $repositoryName = $this->getClass() . 'Repository';
-        $repository = $this->getModule()->getNamespace() . '\Repositories\\' . $repositoryName;
-        $plural = str_plural(strtolower($this->getClass()));
-        
-        $this->imports[] = $repository;
-        
-        return <<<PHP
-
-    /**
-     * @var \\$repository
-     */
-    protected \${$plural};
-    
-    /**
-     * {$this->getControllerName()} constructor.
-     *
-     * @param \\$repository \${$plural}
-     */
-    public function __construct({$repositoryName} \${$plural})
-    {
-        \$this->{$plural} = \${$plural};
-    }
-
-PHP;
+        return $this->getModule()->getNamespace() . '\Repositories\\' . $this->getClass() . 'Repository';
     }
 }

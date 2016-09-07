@@ -9,6 +9,21 @@ use Illuminate\Routing\Controller;
 $IMPORTS$
 class $CLASS$ extends Controller
 {
+    /**
+     * @var \$NAMESPACED_REPOSITORY$
+     */
+    protected $$RESOURCE$;
+    
+    /**
+     * $CLASS$ constructor.
+     *
+     * @param \$NAMESPACED_REPOSITORY$ $$RESOURCE$
+     */
+    public function __construct($REPOSITORY$ $$RESOURCE$)
+    {
+        $this->$RESOURCE$ = $$RESOURCE$;
+    }
+    
 	/**
      * Display a listing of the resource.
      * 
@@ -16,7 +31,9 @@ class $CLASS$ extends Controller
      */
     public function index() : View
     {
-        return view('$MODULE$::pages/$RESOURCE$/index');
+        $$RESOURCE$ = $this->$RESOURCE$->findAll();
+        
+        return view('$MODULE$::pages/$RESOURCE$/index', compact('$RESOURCE$'));
     }
     
     /**
@@ -38,6 +55,8 @@ class $CLASS$ extends Controller
      */
     public function store(Request $request) : RedirectResponse
     {
+        // TODO: trigger the store job to create the resource
+        
         return redirect()->route('$RESOURCE$.index');
     }
     
@@ -51,7 +70,9 @@ class $CLASS$ extends Controller
      */
     public function show(Request $request, string $id) : View
     {
-        return view('$MODULE$::pages/$RESOURCE$/show');
+        $$RESOURCE_SINGULAR$ = $this->$RESOURCE$->find($id);
+        
+        return view('$MODULE$::pages/$RESOURCE$/show', compact('$RESOURCE_SINGULAR$'));
     }
     
     /**
@@ -63,7 +84,9 @@ class $CLASS$ extends Controller
      */
     public function edit(string $id) : View
     {
-        return view('$MODULE$::pages/$RESOURCE$/edit');
+        $$RESOURCE_SINGULAR$ = $this->$RESOURCE$->find($id);
+        
+        return view('$MODULE$::pages/$RESOURCE$/edit', compact('$RESOURCE_SINGULAR$'));
     }
     
     /**
@@ -76,6 +99,10 @@ class $CLASS$ extends Controller
      */
     public function update(Request $request, string $id) : RedirectResponse
     {
+        $$RESOURCE_SINGULAR$ = $this->$RESOURCE$->find($id);
+    
+        // TODO: trigger the update job to update the resource
+        
         return redirect()->route('$RESOURCE$.show', $id);
     }
     
@@ -88,6 +115,10 @@ class $CLASS$ extends Controller
      */
     public function destroy(string $id) : RedirectResponse
     {
+        $$RESOURCE_SINGULAR$ = $this->$RESOURCE$->find($id);
+        
+        // TODO: trigger the delete job to delete the resource
+        
         return redirect()->route('$RESOURCE$.index');
     }
 }
