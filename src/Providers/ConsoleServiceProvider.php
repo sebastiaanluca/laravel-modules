@@ -16,8 +16,6 @@ use Nwidart\Modules\Commands\ModelCommand;
 
 class ConsoleServiceProvider extends ServiceProvider
 {
-    protected $defer = false;
-    
     /**
      * The available commands
      *
