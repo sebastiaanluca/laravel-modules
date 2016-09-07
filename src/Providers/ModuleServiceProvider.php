@@ -59,6 +59,14 @@ abstract class ModuleServiceProvider extends ServiceProvider
     }
     
     /**
+     * Bind concrete repositories to their interfaces.
+     */
+    protected function bindRepositories()
+    {
+        //
+    }
+    
+    /**
      * Prepare all module assets.
      */
     protected function bootResources()
@@ -103,6 +111,7 @@ abstract class ModuleServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerConfiguration();
+        $this->bindRepositories();
     }
     
     /**

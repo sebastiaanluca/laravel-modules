@@ -1,0 +1,11 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use Rinvex\Repository\Repositories\EloquentRepository;
+use $MODEL$;
+
+class $CLASS$ extends EloquentRepository implements $INTERFACE$
+{
+    protected $model = $MODEL_BASENAME$::class;
+}

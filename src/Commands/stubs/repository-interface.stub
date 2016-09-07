@@ -1,0 +1,11 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use Rinvex\Repository\Contracts\CacheableContract;
+use Rinvex\Repository\Contracts\RepositoryContract;
+
+interface $CLASS$ extends RepositoryContract, CacheableContract
+{
+    
+}
