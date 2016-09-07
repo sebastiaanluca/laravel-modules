@@ -39,7 +39,7 @@ abstract class GeneratorCommand extends Command
      */
     protected function getClass()
     {
-        return class_basename($this->argument($this->argumentName));
+        return class_basename(studly_case($this->argument($this->argumentName)));
     }
     
     /**
