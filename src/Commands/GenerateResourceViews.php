@@ -55,6 +55,7 @@ class GenerateResourceViews extends MultiGeneratorCommand
                 'type' => 'page',
                 'source' => 'views/crud/index.stub',
                 'directory' => 'resources/views/pages/' . $resource,
+                // Don't use the default page view if the user has overridden it in their config
                 'overrideSource' => true,
             ],
             [
