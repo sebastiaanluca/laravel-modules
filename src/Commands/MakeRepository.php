@@ -113,5 +113,4 @@ class MakeRepository extends MultiGeneratorCommand
         $this->info('Now add the following line to the <bindRepositories> method in your module service provider:');
         $this->info('$this->app->bind(' . $interface . ', ' . $repository . ');');
     }
-    
 }
