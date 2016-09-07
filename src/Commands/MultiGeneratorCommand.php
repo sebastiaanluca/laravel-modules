@@ -61,12 +61,8 @@ abstract class MultiGeneratorCommand extends Command
      */
     protected function getClassNamespace($module)
     {
-        $extra = str_replace($this->getClass(), '', $this->argument($this->argumentName));
-        $extra = str_replace('/', '\\', $extra);
-        
         $namespace = $module->getNamespace();
         $namespace .= '\\' . $this->getDefaultNamespace();
-        $namespace .= '\\' . $extra;
         
         return trim($namespace, '\\');
     }
@@ -75,18 +71,33 @@ abstract class MultiGeneratorCommand extends Command
      * Get template contents.
      *
      * @param string $stub
+     * @param array $file
      *
      * @return string
      */
-    protected function getTemplateContentsFor($stub)
+    protected function getRenderedStub($stub, array $file)
+    {
+        return (new Stub($stub, $this->getStubVariables($file)))->render();
+    }
+    
+    /**
+     * Get the stub's variables.
+     *
+     * @param array $file
+     *
+     * @return array
+     */
+    protected function getStubVariables(array $file)
     {
         $module = $this->getModule();
         
-        return (new Stub($stub, [
+        return [
             'MODULE' => $this->getFullyQualifiedName(),
             'MODULE_TITLE' => $module->getStudlyName(),
             'MODULE_NAME' => $module->getLowerName(),
-        ]))->render();
+            'NAMESPACE' => $this->getClassNamespace($module),
+            'CLASS' => array_get($file, 'name', $this->getClass()),
+        ];
     }
     
     /**
@@ -115,7 +126,6 @@ abstract class MultiGeneratorCommand extends Command
         return "{$path}/{$directory}/{$name}{$extension}";
     }
     
-    
     /**
      * @param string $file
      */
@@ -127,13 +137,13 @@ abstract class MultiGeneratorCommand extends Command
             $this->laravel['files']->makeDirectory($dir, 0777, true);
         }
         
-        $stub =  $this->laravel['modules']->config('paths.sources.' . $file['type'], $file['source']);
+        $stub = $this->laravel['modules']->config('paths.sources.' . $file['type'], $file['source']);
         
-        if(array_get($file, 'overrideSource')){
-            $stub = array_get($file, 'source', $stub); 
+        if (array_get($file, 'overrideSource')) {
+            $stub = array_get($file, 'source', $stub);
         }
         
-        $contents = $this->getTemplateContentsFor($stub);
+        $contents = $this->getRenderedStub($stub, $file);
         
         try {
             with(new FileGenerator($path, $contents))->generate();
