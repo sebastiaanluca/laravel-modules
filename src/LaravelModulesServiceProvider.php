@@ -3,11 +3,11 @@
 namespace Nwidart\Modules;
 
 use Illuminate\Support\ServiceProvider;
-use Laracademy\Generators\GeneratorsServiceProvider;
 use Nwidart\Modules\Providers\BootstrapServiceProvider;
 use Nwidart\Modules\Providers\ConsoleServiceProvider;
 use Nwidart\Modules\Providers\ContractsServiceProvider;
 use Nwidart\Modules\Support\Stub;
+use Rinvex\Repository\Providers\RepositoryServiceProvider;
 
 class LaravelModulesServiceProvider extends ServiceProvider
 {
@@ -19,33 +19,11 @@ class LaravelModulesServiceProvider extends ServiceProvider
     protected $defer = false;
     
     /**
-     * Publish required front-end build assets to the root app directory.
+     * Register third-party service providers.
      */
-    protected function registerPublishableResources()
+    protected function registerThirdPartyProviders()
     {
-        $this->publishes([
-            __DIR__ . '/../resources' => app_path(),
-        ], 'build-scripts');
-    }
-    
-    /**
-     * Register all modules.
-     */
-    protected function registerModules()
-    {
-        $this->app->register(BootstrapServiceProvider::class);
-    }
-    
-    /**
-     * Register package's namespaces.
-     */
-    protected function registerNamespaces()
-    {
-        $configPath = __DIR__ . '/../config/config.php';
-        $this->mergeConfigFrom($configPath, 'modules');
-        $this->publishes([
-            $configPath => config_path('modules.php'),
-        ], 'config');
+        $this->app->register(RepositoryServiceProvider::class);
     }
     
     /**
@@ -61,6 +39,20 @@ class LaravelModulesServiceProvider extends ServiceProvider
     }
     
     /**
+     * Setup stub path.
+     */
+    protected function setupStubPath()
+    {
+        $this->app->booted(function($app) {
+            Stub::setBasePath(__DIR__ . '/Commands/stubs');
+            
+            if ($app['modules']->config('stubs.enabled') === true) {
+                Stub::setBasePath($app['modules']->config('stubs.path') ?: __DIR__ . '/Commands/stubs');
+            }
+        });
+    }
+    
+    /**
      * Register providers.
      */
     protected function registerProviders()
@@ -70,13 +62,33 @@ class LaravelModulesServiceProvider extends ServiceProvider
     }
     
     /**
-     * Booting the package.
+     * Publish required front-end build assets to the root app directory.
      */
-    public function boot()
+    protected function registerPublishableResources()
     {
-        $this->registerNamespaces();
-        
-        $this->registerModules();
+        $this->publishes([
+            __DIR__ . '/../resources' => app_path(),
+        ], 'build-scripts');
+    }
+    
+    /**
+     * Register package's namespaces.
+     */
+    protected function registerNamespaces()
+    {
+        $configPath = __DIR__ . '/../config/config.php';
+        $this->mergeConfigFrom($configPath, 'modules');
+        $this->publishes([
+            $configPath => config_path('modules.php'),
+        ], 'config');
+    }
+    
+    /**
+     * Register all modules.
+     */
+    protected function registerModules()
+    {
+        $this->app->register(BootstrapServiceProvider::class);
     }
     
     /**
@@ -84,6 +96,7 @@ class LaravelModulesServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->registerThirdPartyProviders();
         $this->registerServices();
         $this->setupStubPath();
         $this->registerProviders();
@@ -91,17 +104,12 @@ class LaravelModulesServiceProvider extends ServiceProvider
     }
     
     /**
-     * Setup stub path.
+     * Booting the package.
      */
-    public function setupStubPath()
+    public function boot()
     {
-        $this->app->booted(function($app) {
-            Stub::setBasePath(__DIR__ . '/Commands/stubs');
-            
-            if ($app['modules']->config('stubs.enabled') === true) {
-                Stub::setBasePath($app['modules']->config('stubs.path') ?: __DIR__ . '/Commands/stubs');
-            }
-        });
+        $this->registerNamespaces();
+        $this->registerModules();
     }
     
     /**
