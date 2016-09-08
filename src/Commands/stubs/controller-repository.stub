@@ -55,7 +55,7 @@ class $CLASS$ extends Controller
      */
     public function store(Request $request) : RedirectResponse
     {
-        // TODO: trigger the store job to create the resource
+        $this->$RESOURCE$->create($request->all());
         
         return redirect()->route('$RESOURCE$.index');
     }
@@ -99,9 +99,7 @@ class $CLASS$ extends Controller
      */
     public function update(Request $request, string $id) : RedirectResponse
     {
-        $$RESOURCE_SINGULAR$ = $this->$RESOURCE$->find($id);
-    
-        // TODO: trigger the update job to update the resource
+        $this->$RESOURCE$->update($id, $request->all());
         
         return redirect()->route('$RESOURCE$.show', $id);
     }
@@ -115,9 +113,7 @@ class $CLASS$ extends Controller
      */
     public function destroy(string $id) : RedirectResponse
     {
-        $$RESOURCE_SINGULAR$ = $this->$RESOURCE$->find($id);
-        
-        // TODO: trigger the delete job to delete the resource
+        $this->$RESOURCE$->delete($id);
         
         return redirect()->route('$RESOURCE$.index');
     }
