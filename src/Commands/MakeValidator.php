@@ -104,109 +104,205 @@ class MakeValidator extends GeneratorCommand
      */
     protected function getRules()
     {
-        //'other_resource_id' => 'required|integer',
-        //'name' => 'required|max:100',
-        //'email' => 'bail|required|email|max:180|unique:tests,email,NULL,id,deleted_at,NULL',
-        //'is_something' => 'boolean',
-        //'decimal' => 'required|numeric|between:0,99.99',
-        //'description' => 'required|max:9999',
-        //'items' => 'array',
-        //'solved_at' => 'date_format:Y-m-d H:i:s',
-        
         if (! $table = $this->option('table')) {
             return '';
         }
         
         $table = app(TableReader::class)->read($table);
-        $fillable = $table->getFillable();
+        $validatable = $this->getValidatableFields($table);
         
-        if ($table->hasField('password')) {
-            $fillable[] = 'password';
-        }
-        
-        // TODO: refactor into one big method and further down to several methods (use a mapping array and a loop/collection)
-        
-        $rules = $table->getRawFields()->filter(function($item) use ($fillable) {
-            // Only keep fillable and non-ID fields
-            return in_array($item['field'], $fillable) && ! ends_with($item['field'], '_id');
+        $rules = $table->getRawFields()->filter(function($item) use ($validatable) {
+            // Only keep validatable and non-ID fields
+            return in_array($item['field'], $validatable) && ! ends_with($item['field'], '_id');
         })->map(function($item) use ($table) {
-            /**
-             * @var string $field
-             * @var string $type
-             * @var string $null
-             * @var string $key
-             * @var string $default
-             * @var string $extra
-             */
-            extract($item);
-            
-            $rules = [];
-            
-            // Field is required
-            if ($null === 'NO' && is_null($default)) {
-                $rules[] = 'required';
-            }
-            
-            if (str_contains($type, 'varchar')) {
-                $length = preg_replace('/\D/', '', $type);
-                
-                $rules[] = 'string|max:' . $length;
-            }
-            
-            if ($type === 'tinyint(1)') {
-                $rules[] = 'boolean';
-            }
-            
-            if ($field == 'email') {
-                $rules = array_prepend($rules, 'bail');
-                
-                $rules[] = 'email';
-            }
-            
-            if ($type === 'text') {
-                // 65535 bytes max for a text field divided by 4 bytes per char (utf8mb4)
-                $rules[] = 'string|max:16383';
-            }
-            
-            if (str_contains($type, 'double')) {
-                preg_match('~\((.*?)\)~', $type, $match);
-                
-                list($base, $decimal) = explode(',', $match[1]);
-                
-                $base = str_repeat('9', $base);
-                $decimal = str_repeat('9', $decimal);
-                
-                $rules[] = "numeric|between:0,$base.$decimal";
-            }
-            
-            if ($type === 'json') {
-                $rules[] = 'array';
-            }
-            
-            if ($type === 'timestamp') {
-                $rules[] = 'date_format:Y-m-d H:i:s';
-            }
-            
-            // Field has a unique or composite (unique) key
-            if (in_array($key, ['UNI', 'MUL'])) {
-                $uniqueRule = 'unique:' . $table->getTable() . ',' . $field;
-                
-                // Ignore (soft) deleted entries
-                if ($table->usesSoftDelete()) {
-                    $uniqueRule .= ',NULL,id,deleted_at,NULL';
-                }
-                
-                $rules[] = $uniqueRule;
-            }
-            
-            // TODO: support for signed/unsigned integers, floats, …
-            
             return [
-                'field' => $field,
-                'rules' => join('|', $rules),
+                'field' => $item['field'],
+                'rules' => $this->getRulesForField($item, $table),
             ];
         })->pluck('rules', 'field')->toArray();
         
         return $this->format($rules, 2);
+    }
+    
+    /**
+     * Get the fields under validation.
+     *
+     * @param TableReader $table
+     *
+     * @return array
+     */
+    protected function getValidatableFields(TableReader $table) : array
+    {
+        $validatable = $table->getFillable();
+        
+        if ($table->hasField('password')) {
+            $validatable[] = 'password';
+        }
+        
+        return $validatable;
+    }
+    
+    /**
+     * Get the validation rules for a given table field.
+     *
+     * @param array $item
+     * @param \Nwidart\Modules\Support\TableReader $table
+     *
+     * @return string
+     */
+    protected function getRulesForField(array $item, TableReader $table) : string
+    {
+        $rules = [];
+        
+        $this->addRequiredRule($item, $rules);
+        $this->addVarcharFieldRules($item, $rules);
+        $this->addBooleanFieldRules($item, $rules);
+        $this->addEmailFieldRules($item, $rules);
+        $this->addTextFieldRules($item, $rules);
+        $this->addDecimalFieldRules($item, $rules);
+        $this->addJsonFieldRules($item, $rules);
+        $this->addTimestampFieldRules($item, $rules);
+        $this->addUniqueFieldRules($item, $rules, $table);
+        
+        // TODO: support for signed/unsigned integers, floats, …
+        
+        return join('|', $rules);
+    }
+    
+    /**
+     * Add the required rule if applicable.
+     *
+     * @param array $item
+     * @param array $rules
+     */
+    protected function addRequiredRule(array $item, array &$rules)
+    {
+        if ($item['null'] === 'NO' && is_null($item['default'])) {
+            $rules[] = 'required';
+        }
+    }
+    
+    /**
+     * Add rules for a varchar field if applicable.
+     *
+     * @param array $item
+     * @param array $rules
+     */
+    protected function addVarcharFieldRules(array $item, array &$rules)
+    {
+        if (str_contains($item['type'], 'varchar')) {
+            $length = preg_replace('/\D/', '', $item['type']);
+            
+            $rules[] = 'string|max:' . $length;
+        }
+    }
+    
+    /**
+     * Add rules for a boolean field if applicable.
+     *
+     * @param array $item
+     * @param array $rules
+     */
+    protected function addBooleanFieldRules(array $item, array &$rules)
+    {
+        if ($item['type'] === 'tinyint(1)') {
+            $rules[] = 'boolean';
+        }
+    }
+    
+    /**
+     * Add rules for an e-mail field if applicable.
+     *
+     * @param array $item
+     * @param array $rules
+     */
+    protected function addEmailFieldRules(array $item, array &$rules)
+    {
+        if ($item['field'] == 'email') {
+            $rules = array_prepend($rules, 'bail');
+            
+            $rules[] = 'email';
+        }
+    }
+    
+    /**
+     * Add rules for a text field if applicable.
+     *
+     * @param array $item
+     * @param array $rules
+     */
+    protected function addTextFieldRules(array $item, array &$rules)
+    {
+        if ($item['type'] === 'text') {
+            // 65535 bytes max for a text field divided by 4 bytes per char (utf8mb4)
+            $rules[] = 'string|max:16383';
+        }
+    }
+    
+    /**
+     * Add rules for a decimal (float) field if applicable.
+     *
+     * @param array $item
+     * @param array $rules
+     */
+    protected function addDecimalFieldRules(array $item, array &$rules)
+    {
+        if (str_contains($item['type'], 'double')) {
+            preg_match('~\((.*?)\)~', $item['type'], $match);
+            
+            list($base, $decimal) = explode(',', $match[1]);
+            
+            $base = str_repeat('9', $base);
+            $decimal = str_repeat('9', $decimal);
+            
+            $rules[] = "numeric|between:0,$base.$decimal";
+        }
+    }
+    
+    /**
+     * Add rules for a JSON field if applicable.
+     *
+     * @param array $item
+     * @param array $rules
+     */
+    protected function addJsonFieldRules(array $item, array &$rules)
+    {
+        if ($item['type'] === 'json') {
+            $rules[] = 'array';
+        }
+    }
+    
+    /**
+     * Add rules for a timestamp field if applicable.
+     *
+     * @param array $item
+     * @param array $rules
+     */
+    protected function addTimestampFieldRules(array $item, array &$rules)
+    {
+        if ($item['type'] === 'timestamp') {
+            $rules[] = 'date_format:Y-m-d H:i:s';
+        }
+    }
+    
+    /**
+     * Add rules for a unique or composite unique field if applicable.
+     *
+     * @param array $item
+     * @param array $rules
+     * @param \Nwidart\Modules\Support\TableReader $table
+     */
+    protected function addUniqueFieldRules(array $item, array &$rules, TableReader $table)
+    {
+        if (in_array($item['key'], ['UNI', 'MUL'])) {
+            $uniqueRule = 'unique:' . $table->getTable() . ',' . $item['field'];
+            
+            // Ignore (soft) deleted entries
+            if ($table->usesSoftDelete()) {
+                $uniqueRule .= ',NULL,id,deleted_at,NULL';
+            }
+            
+            $rules[] = $uniqueRule;
+        }
     }
 }
