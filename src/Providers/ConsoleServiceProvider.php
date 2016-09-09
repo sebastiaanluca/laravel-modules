@@ -12,6 +12,7 @@ use Nwidart\Modules\Commands\GenerateResourceViews;
 use Nwidart\Modules\Commands\GenerateRouter;
 use Nwidart\Modules\Commands\MakeCommand;
 use Nwidart\Modules\Commands\MakeRepository;
+use Nwidart\Modules\Commands\MakeValidator;
 use Nwidart\Modules\Commands\MigrationCommand;
 use Nwidart\Modules\Commands\ModelCommand;
 
@@ -37,6 +38,7 @@ class ConsoleServiceProvider extends ServiceProvider
         MigrationCommand::class,
         ModelCommand::class,
         MakeRepository::class,
+        MakeValidator::class,
         
         //        CommandCommand::class,
         //        DisableCommand::class,

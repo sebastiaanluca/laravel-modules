@@ -68,6 +68,56 @@ abstract class GeneratorCommand extends Command
     }
     
     /**
+     * Format a given value as a string.
+     *
+     * @param mixed $value
+     * @param int $indentationLevel
+     *
+     * @return string
+     */
+    protected function format($value, int $indentationLevel = 1) : string
+    {
+        if (is_array($value)) {
+            return $this->formatAsArrayContents($value, $indentationLevel + 1);
+        }
+        
+        return '';
+    }
+    
+    /**
+     * Format a given array as a string.
+     *
+     * @param array $value
+     * @param int $indentationLevel
+     *
+     * @return string
+     */
+    protected function formatAsArrayContents(array $value, int $indentationLevel = 2) : string
+    {
+        $isMultiValue = count($value) > 0;
+        $isAssociative = is_assoc_array($value);
+        $indent = '    ';
+        
+        if (! $isMultiValue) {
+            return str_wrap($value[0], "'");
+        }
+        
+        $string = collect($value)->map(function($item, $key) use ($isAssociative) {
+            if ($isAssociative) {
+                return $key . "' => '" . $item;
+            }
+            
+            return $item;
+        })->map(function($item) use ($indent, $indentationLevel) {
+            return PHP_EOL . str_repeat($indent, $indentationLevel) . str_wrap($item, "'") . ',';
+        })->implode('');
+        
+        $string = $string . PHP_EOL . str_repeat($indent, $indentationLevel - 1);
+        
+        return $string;
+    }
+    
+    /**
      * Execute the console command.
      */
     public function fire()

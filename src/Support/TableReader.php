@@ -77,23 +77,6 @@ class TableReader
     }
     
     /**
-     * Get information about the table's fields.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    protected function getFields() : Collection
-    {
-        $fields = collect($this->database->select($this->database->raw('describe ' . $this->table)));
-        
-        // Normalize the output
-        $fields = $fields->map(function($field) {
-            return array_change_key_case((array)$field, CASE_LOWER);
-        });
-        
-        return $fields;
-    }
-    
-    /**
      * Get the native cast type of a database field.
      *
      * @param string $type
@@ -138,6 +121,26 @@ class TableReader
     }
     
     /**
+     * Get the table's fields and additional raw information.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getRawFields() : Collection
+    {
+        return $this->fields;
+    }
+    
+    /**
+     * Get the table's fields.
+     *
+     * @return array
+     */
+    public function getFields() : array
+    {
+        return $this->fields->pluck('field')->toArray();
+    }
+    
+    /**
      * Get all guarded attributes.
      *
      * @return array
@@ -146,6 +149,16 @@ class TableReader
     {
         // Compare default guarded fields with the ones in the table
         return array_values(array_intersect($this->fields->pluck('field')->toArray(), $this->defaultGuarded));
+    }
+    
+    /**
+     * Get all mass-assignable attributes.
+     *
+     * @return array
+     */
+    public function getFillable() : array
+    {
+        return array_diff($this->fields->pluck('field')->toArray(), $this->defaultGuarded);
     }
     
     /**
@@ -176,6 +189,28 @@ class TableReader
     }
     
     /**
+     * Check if the table contains a given field.
+     *
+     * @param string $field
+     *
+     * @return bool
+     */
+    public function hasField(string $field) : bool
+    {
+        return in_array($field, $this->getFields());
+    }
+    
+    /**
+     * Check if the table uses soft delete.
+     *
+     * @return bool
+     */
+    public function usesSoftDelete() : bool
+    {
+        return $this->hasField('deleted_at');
+    }
+    
+    /**
      * Read all information from the table.
      *
      * @param string $table
@@ -186,7 +221,12 @@ class TableReader
     {
         $this->table = $table;
         
-        $this->fields = $this->getFields();
+        $fields = collect($this->database->select($this->database->raw('describe ' . $this->table)));
+        
+        // Normalize the output
+        $this->fields = $fields->map(function($field) {
+            return array_change_key_case((array)$field, CASE_LOWER);
+        });
         
         return $this;
     }
