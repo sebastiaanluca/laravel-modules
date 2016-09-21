@@ -67,6 +67,14 @@ abstract class ModuleServiceProvider extends ServiceProvider
     }
     
     /**
+     * Register artisan commands.
+     */
+    protected function registerCommands()
+    {
+        //
+    }
+    
+    /**
      * Prepare all module assets.
      */
     protected function bootResources()
@@ -112,6 +120,7 @@ abstract class ModuleServiceProvider extends ServiceProvider
     {
         $this->registerConfiguration();
         $this->bindRepositories();
+        $this->registerCommands();
     }
     
     /**
