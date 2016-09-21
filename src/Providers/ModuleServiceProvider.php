@@ -41,21 +41,13 @@ abstract class ModuleServiceProvider extends ServiceProvider
      */
     protected function registerConfiguration()
     {
-        $files = app('Illuminate\Filesystem\Filesystem');
-        $directory = $this->getModulePath() . '/config';
+        $configuration = $this->getModulePath() . '/config/config.php';
         
-        // Our package configuration files
-        $configurations = $files->files($directory);
-        
-        // Merge each one with the published configuration
-        // so we end up with complete configuration files
-        foreach ($configurations as $configuration) {
-            $this->mergeConfigFrom($configuration, $this->module);
-            
-            // TODO: should be this? namespace/module.configfile.key instead of namespace/module.key
-            // Merge module config into app config (if any)
-            // $this->mergeConfigFrom($configuration, $this->module . '/' . $configuration);  // $this->module . '/' . $configuration => should be app location of our module config
+        if (! file_exists($configuration)) {
+            return;
         }
+        
+        $this->mergeConfigFrom($configuration, str_replace('/', '.', $this->module));
     }
     
     /**
