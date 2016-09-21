@@ -25,7 +25,8 @@ class ModelCommand extends GeneratorCommand
     protected $signature = 'module:make:model
                             {name : The name of the model}
                             {module : The name of the module to create the model in}
-                            {--table= : Base the model on the structure of an existing database table}';
+                            {--table= : Base the model on the structure of an existing database table}
+                            {--connection= : The connection to use}';
     
     /**
      * The console command description.
@@ -42,7 +43,26 @@ class ModelCommand extends GeneratorCommand
         $module = $this->laravel['modules']->findOrFail($this->getFullyQualifiedName());
         
         if ($table = $this->option('table')) {
-            $reader = app(TableReader::class)->read($table);
+            /** @var \Nwidart\Modules\Support\TableReader $reader */
+            $reader = app(TableReader::class);
+            
+            if ($connection = $this->option('connection')) {
+                $reader->setConnection($connection);
+            }
+            
+            $reader = $reader->read($table);
+            
+            $connection = $reader->getConnection()->getName();
+            $connection = <<<PHP
+    
+    /**
+     * The connection name for the model.
+     *
+     * @var string
+     */
+    protected \$connection = '$connection';
+    
+PHP;
             
             $table = $reader->getTable();
             $guarded = $this->format($reader->getGuarded());
@@ -53,6 +73,7 @@ class ModelCommand extends GeneratorCommand
         return (new Stub('model.stub', [
             'NAMESPACE' => $this->getClassNamespace($module),
             'CLASS' => $this->getClass(),
+            'CONNECTION' => $connection ?? '',
             'TABLE' => $table ?? '',
             'GUARDED' => $guarded ?? '',
             'CASTS' => $casts ?? '',

@@ -3,14 +3,20 @@
 namespace Nwidart\Modules\Support;
 
 use Illuminate\Database\Connection;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Collection;
 
 class TableReader
 {
     /**
-     * @var \Illuminate\Database\Connection
+     * @var \Illuminate\Database\DatabaseManager
      */
     protected $database;
+    
+    /**
+     * @var \Illuminate\Database\Connection
+     */
+    protected $connection;
     
     /**
      * The name of the table.
@@ -69,11 +75,12 @@ class TableReader
     /**
      * TableReader constructor.
      *
-     * @param \Illuminate\Database\Connection $database
+     * @param \Illuminate\Database\DatabaseManager $database
      */
-    public function __construct(Connection $database)
+    public function __construct(DatabaseManager $database)
     {
         $this->database = $database;
+        $this->connection = $this->database->connection();
     }
     
     /**
@@ -108,6 +115,26 @@ class TableReader
         }
         
         return false;
+    }
+    
+    /**
+     * Set the database connection to use when reading the table.
+     *
+     * @param string $connection
+     */
+    public function setConnection(string $connection)
+    {
+        $this->connection = $this->database->connection($connection);
+    }
+    
+    /**
+     * Get the database connection.
+     *
+     * @return \Illuminate\Database\Connection
+     */
+    public function getConnection() : Connection
+    {
+        return $this->connection;
     }
     
     /**
@@ -221,7 +248,7 @@ class TableReader
     {
         $this->table = $table;
         
-        $fields = collect($this->database->select($this->database->raw('describe ' . $this->table)));
+        $fields = collect($this->connection->select($this->connection->raw('describe ' . $this->table)));
         
         // Normalize the output
         $this->fields = $fields->map(function($field) {

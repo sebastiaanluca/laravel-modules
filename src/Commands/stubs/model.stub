@@ -5,7 +5,7 @@ namespace $NAMESPACE$;
 use Illuminate\Database\Eloquent\Model;
 
 class $CLASS$ extends Model
-{
+{$CONNECTION$
     /**
      * The database table used by the model.
      *
