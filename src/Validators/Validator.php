@@ -3,7 +3,6 @@
 namespace Nwidart\Modules\Validators;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Collection;
 
 abstract class Validator extends FormRequest
 {
@@ -35,8 +34,14 @@ abstract class Validator extends FormRequest
      */
     public function getValidInput(bool $clean = false) : array
     {
+        // Make sure any multi-dimensional input array matches our dotted rule keys
+        $input = array_dot($this->input());
+        
         // Match the input attributes against the existing rules
-        $input = array_only($this->input(), array_keys($this->rules()));
+        $input = array_only($input, array_keys($this->rules()));
+        
+        // Reverse dot flattening to match original input
+        $input = array_expand($input);
         
         // Clean empty values
         if ($clean) {
