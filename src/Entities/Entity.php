@@ -12,4 +12,9 @@ interface Entity
      * @return Entity
      */
     public function fill(array $attributes);
+    
+    /**
+     * Set attributes from dynamic methods.
+     */
+    public function parseDynamicAttributes();
 }

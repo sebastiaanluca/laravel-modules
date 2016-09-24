@@ -19,4 +19,16 @@ abstract class BaseEntity implements Entity
         
         return $this;
     }
+    
+    /**
+     * Set attributes from dynamic methods.
+     */
+    public function parseDynamicAttributes()
+    {
+        $methods = get_class_methods($this);
+        
+        collect($methods)->between('get', 'Attribute')->each(function($attribute) {
+            $this->{camel_case($attribute)} = call_user_func([$this, 'get' . $attribute . 'Attribute']);
+        });
+    }
 }

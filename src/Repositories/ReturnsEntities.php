@@ -33,12 +33,15 @@ trait ReturnsEntities
      */
     protected function convertToEntity($item) : Entity
     {
+        /** @var \Nwidart\Modules\Entities\Entity $entity */
         $entity = new $this->entity;
         $fields = array_keys(get_object_vars($entity));
         
         foreach ($fields as $field) {
             $entity->{$field} = $item->{$field};
         }
+        
+        $entity->parseDynamicAttributes();
         
         return $entity;
     }
