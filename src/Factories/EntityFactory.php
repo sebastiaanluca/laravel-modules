@@ -2,8 +2,11 @@
 
 namespace Nwidart\Modules\Factories;
 
+use Exception;
 use Illuminate\Support\Collection;
 use Nwidart\Modules\Entities\Entity;
+use phpDocumentor\Reflection\DocBlockFactory;
+use ReflectionProperty;
 
 class EntityFactory
 {
@@ -29,16 +32,115 @@ class EntityFactory
     /**
      * @param \Nwidart\Modules\Entities\Entity $entity
      * @param array $attributes
+     * @param bool $casts Cast source variables to the types defined in the Entity's variable doc blocks.
      *
      * @return \Nwidart\Modules\Entities\Entity
+     * @throws Exception
      */
-    protected static function fill(Entity $entity, array $attributes) : Entity
+    protected static function fill(Entity $entity, array $attributes, $casts = true) : Entity
     {
+        $dynamicTypes = static::getDynamicFields($entity);
+        $types = static::getCastTypes($entity);
+        
         foreach ($attributes as $attribute => $value) {
+            $type = $types[$attribute];
+            
+            // Second conditional checks if there's something to cast to (i.e. missing doc block)
+            if ($casts && ! is_null($type)) {
+                $value = static::castAttribute($attribute, $value, $type, $nullable = in_array($attribute, $dynamicTypes));
+            }
+            
             $entity->{$attribute} = $value;
         }
         
         return $entity;
+    }
+    
+    /**
+     * Get the variable cast types of the given attributes for an entity.
+     *
+     * @param \Nwidart\Modules\Entities\Entity $entity
+     *
+     * @return array
+     * @throws Exception
+     */
+    protected static function getCastTypes(Entity $entity) : array
+    {
+        $properties = array_keys(get_object_vars($entity));
+        
+        $factory = DocBlockFactory::createInstance();
+        
+        $casts = array_fill_keys($properties, null);
+        
+        foreach (array_keys($casts) as $property) {
+            $reflection = new ReflectionProperty($entity, $property);
+            
+            // No doc block found means no casting
+            if (! $reflection->getDocComment()) {
+                continue;
+            }
+            
+            $doc = $factory->create($reflection);
+            $types = $doc->getTagsByName('var');
+            
+            if (count($types) > 1) {
+                throw new Exception('An entity\'s doc block cannot have more than one @var tag.');
+            }
+            
+            // No @var tags means no casting
+            if (! count($types)) {
+                continue;
+            }
+            
+            // Get the native type or namespaced class of the variable
+            $type = (string)head($types)->getType();
+            
+            // Handle compound types by using the first found
+            $type = explode('|', $type);
+            
+            $casts[$property] = $type;
+        }
+        
+        return $casts;
+    }
+    
+    /**
+     *
+     *
+     * @param $attribute
+     * @param $value
+     * @param $type
+     * @param $nullable
+     *
+     * @return mixed
+     * @throws Exception
+     */
+    // TODO: write more structured
+    protected static function castAttribute($attribute, $value, $type, bool $nullable = false)
+    {
+        // TODO: handle json/array
+        
+        if (is_array($type)) {
+            // Either an attribute is explicitly marked as nullable
+            // or it's a dynamic attribute that'll get filled now
+            // or later through a dynamic attribute method.
+            $nullable = $nullable ?: in_array('null', $type);
+            $type = head($type);
+        }
+        
+        if (is_null($value) && ! $nullable) {
+            throw new Exception('Entity attribute value ' . $attribute . ' cannot be null.');
+        }
+        
+        if (is_null($value)) {
+            
+        } elseif (class_exists($type)) {
+            $value = new $type($value);
+        } elseif (is_scalar($type)) {
+            settype($value, $type);
+        }
+        
+        return $value;
     }
     
     /**

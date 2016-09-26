@@ -5,7 +5,7 @@ namespace Nwidart\Modules\Entities;
 trait SoftDeletes
 {
     /**
-     * @var \Carbon\Carbon
+     * @var \Carbon\Carbon|null
      */
     public $deleted_at;
 }
