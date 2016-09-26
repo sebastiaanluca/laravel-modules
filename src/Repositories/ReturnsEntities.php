@@ -4,11 +4,12 @@ namespace Nwidart\Modules\Repositories;
 
 use Illuminate\Support\Collection;
 use Nwidart\Modules\Entities\Entity;
+use Nwidart\Modules\Factories\EntityFactory;
 
 trait ReturnsEntities
 {
     /**
-     * The lean entity value object that is returned for a result.
+     * The class name of the lean entity value object that is returned for a result.
      *
      * @var string
      */
@@ -36,27 +37,8 @@ trait ReturnsEntities
     }
     
     /**
-     * @param mixed $item
+     * Convert all objects in a result collection to entities.
      *
-     * @return \Nwidart\Modules\Entities\Entity
-     */
-    protected function convertToEntity($item) : Entity
-    {
-        /** @var \Nwidart\Modules\Entities\Entity $entity */
-        $entity = new $this->entity;
-        
-        $fields = array_keys(get_object_vars($entity));
-        
-        foreach ($fields as $field) {
-            $entity->{$field} = $item->{$field};
-        }
-        
-        $this->parseDynamicAttributes($entity);
-        
-        return $entity;
-    }
-    
-    /**
      * @param \Illuminate\Support\Collection $collection
      *
      * @return \Illuminate\Support\Collection
@@ -69,16 +51,14 @@ trait ReturnsEntities
     }
     
     /**
-     * Set attributes from dynamic methods.
+     * Convert a result object to an entity.
      *
-     * @param \Nwidart\Modules\Entities\Entity $entity
+     * @param mixed $object
+     *
+     * @return \Nwidart\Modules\Entities\Entity
      */
-    protected function parseDynamicAttributes(Entity $entity)
+    protected function convertToEntity($object) : Entity
     {
-        $methods = get_class_methods($entity);
-        
-        collect($methods)->between('get', 'Attribute')->each(function($attribute)use($entity) {
-            $entity->{camel_case($attribute)} = call_user_func([$entity, 'get' . $attribute . 'Attribute']);
-        });
+        return EntityFactory::createFromObject($this->entity, $object);
     }
 }
