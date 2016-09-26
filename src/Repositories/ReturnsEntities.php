@@ -15,38 +15,6 @@ trait ReturnsEntities
     protected $entity;
     
     /**
-     * @param \Illuminate\Support\Collection $collection
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    protected function convertToEntityCollection(Collection $collection) : Collection
-    {
-        return $collection->map(function($item) {
-            return $this->convertToEntityResult($item);
-        });
-    }
-    
-    /**
-     * @param mixed $item
-     *
-     * @return \Nwidart\Modules\Entities\Entity
-     */
-    protected function convertToEntity($item) : Entity
-    {
-        /** @var \Nwidart\Modules\Entities\Entity $entity */
-        $entity = new $this->entity;
-        $fields = array_keys(get_object_vars($entity));
-        
-        foreach ($fields as $field) {
-            $entity->{$field} = $item->{$field};
-        }
-        
-        $entity->parseDynamicAttributes();
-        
-        return $entity;
-    }
-    
-    /**
      * Convert a database result to an entity
      *
      * @param mixed $result
@@ -65,5 +33,52 @@ trait ReturnsEntities
         }
         
         return $this->convertToEntity($result);
+    }
+    
+    /**
+     * @param mixed $item
+     *
+     * @return \Nwidart\Modules\Entities\Entity
+     */
+    protected function convertToEntity($item) : Entity
+    {
+        /** @var \Nwidart\Modules\Entities\Entity $entity */
+        $entity = new $this->entity;
+        
+        $fields = array_keys(get_object_vars($entity));
+        
+        foreach ($fields as $field) {
+            $entity->{$field} = $item->{$field};
+        }
+        
+        $this->parseDynamicAttributes($entity);
+        
+        return $entity;
+    }
+    
+    /**
+     * @param \Illuminate\Support\Collection $collection
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    protected function convertToEntityCollection(Collection $collection) : Collection
+    {
+        return $collection->map(function($item) {
+            return $this->convertToEntityResult($item);
+        });
+    }
+    
+    /**
+     * Set attributes from dynamic methods.
+     *
+     * @param \Nwidart\Modules\Entities\Entity $entity
+     */
+    protected function parseDynamicAttributes(Entity $entity)
+    {
+        $methods = get_class_methods($entity);
+        
+        collect($methods)->between('get', 'Attribute')->each(function($attribute)use($entity) {
+            $entity->{camel_case($attribute)} = call_user_func([$entity, 'get' . $attribute . 'Attribute']);
+        });
     }
 }
