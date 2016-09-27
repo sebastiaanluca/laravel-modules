@@ -1,0 +1,10 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use Nwidart\Modules\Entities\Entity;
+$IMPORTS$
+class $CLASS$ implements Entity
+{$TRAITS$
+$PROPERTIES$
+}

@@ -216,6 +216,18 @@ class TableReader
     }
     
     /**
+     * Get all nullable attributes.
+     *
+     * @return array
+     */
+    public function getNullableFields() : array
+    {
+        return $this->fields->pluck('null', 'field')->filter(function($nullable, $field) {
+            return $nullable === 'YES';
+        })->keys()->toArray();
+    }
+    
+    /**
      * Check if the table contains a given field.
      *
      * @param string $field
@@ -225,6 +237,16 @@ class TableReader
     public function hasField(string $field) : bool
     {
         return in_array($field, $this->getFields());
+    }
+    
+    /**
+     * Check if the table uses timestamps.
+     *
+     * @return bool
+     */
+    public function usesTimestamps() : bool
+    {
+        return $this->hasField('created_at') && $this->hasField('updated_at');
     }
     
     /**

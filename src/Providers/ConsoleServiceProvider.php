@@ -11,6 +11,7 @@ use Nwidart\Modules\Commands\GenerateResource;
 use Nwidart\Modules\Commands\GenerateResourceViews;
 use Nwidart\Modules\Commands\GenerateRouter;
 use Nwidart\Modules\Commands\MakeCommand;
+use Nwidart\Modules\Commands\MakeEntity;
 use Nwidart\Modules\Commands\MakeRepository;
 use Nwidart\Modules\Commands\MakeValidator;
 use Nwidart\Modules\Commands\MigrationCommand;
@@ -27,18 +28,21 @@ class ConsoleServiceProvider extends ServiceProvider
         MakeCommand::class,
         
         GenerateProviderCommand::class,
-        ControllerCommand::class,
-        GenerateDefaultViews::class,
-        GenerateDefaultScripts::class,
-        
-        GenerateResource::class,
-        GenerateRouter::class,
-        GenerateResourceViews::class,
         
         MigrationCommand::class,
         ModelCommand::class,
+        MakeEntity::class,
         MakeRepository::class,
+        
+        ControllerCommand::class,
         MakeValidator::class,
+        GenerateRouter::class,
+
+        GenerateDefaultScripts::class,
+        GenerateDefaultViews::class,
+        GenerateResourceViews::class,
+
+        GenerateResource::class,
         
         //        CommandCommand::class,
         //        DisableCommand::class,
