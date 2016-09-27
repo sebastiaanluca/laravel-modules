@@ -7,5 +7,10 @@ use $MODEL$;
 
 class $CLASS$ extends EloquentRepository implements $INTERFACE$
 {
+    /**
+     * The repository model.
+     *
+     * @var string
+     */
     protected $model = $MODEL_BASENAME$::class;
 }
