@@ -3,14 +3,22 @@
 namespace $NAMESPACE$;
 
 use Rinvex\Repository\Repositories\EloquentRepository;
+use $ENTITY$;
 use $MODEL$;
 
 class $CLASS$ extends EloquentRepository implements $INTERFACE$
 {
     /**
-     * The repository model.
+     * The model that's used by the repository to retrieve records and perform actions.
      *
      * @var string
      */
     protected $model = $MODEL_BASENAME$::class;
+    
+    /**
+     * The lean entity value object results are converted to. 
+     *
+     * @var string
+     */
+    protected $entity = $ENTITY_BASENAME$::class;
 }
