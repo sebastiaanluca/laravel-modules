@@ -88,15 +88,7 @@ PHP;
         
         $subPath = $this->laravel['modules']->config('paths.generator.model');
         
-        return "$path/$subPath/{$this->getModelName()}.php";
-    }
-    
-    /**
-     * @return mixed|string
-     */
-    protected function getModelName()
-    {
-        return studly_case($this->argument('name'));
+        return "$path/$subPath/{$this->getClass()}.php";
     }
     
     /**
