@@ -9,6 +9,7 @@ class ModelCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
     use GeneratesFromTable;
+    use UsesImportsAndTraits;
     
     /**
      * The name of argument name.
@@ -64,6 +65,25 @@ PHP;
             $guarded = $this->format($reader->getGuarded());
             $casts = $this->format($reader->getCasts());
             $dates = $this->format($reader->getDates());
+    
+            if ($reader->usesSoftDelete()) {
+                $this->imports[] = 'Illuminate\\Database\\Eloquent\\SoftDeletes';
+                $this->traits[] = 'SoftDeletes';
+            }
+    
+            if (! $reader->usesTimestamps()) {
+                $timestamps= <<<PHP
+
+    
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public \$timestamps = false;
+PHP;
+
+            }
         }
         
         return (new Stub('model.stub', [
@@ -72,8 +92,12 @@ PHP;
             'CONNECTION' => $connection ?? '',
             'TABLE' => $table ?? '',
             'GUARDED' => $guarded ?? '',
+            'TIMESTAMPS' => $timestamps ?? '',
             'CASTS' => $casts ?? '',
             'DATES' => $dates ?? '',
+            
+            'IMPORTS' => $this->getTemplateImports(),
+            'TRAITS' => $this->getTraits(),
         ]))->render();
     }
     

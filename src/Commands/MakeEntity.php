@@ -9,6 +9,7 @@ class MakeEntity extends GeneratorCommand
 {
     use ModuleCommandTrait;
     use GeneratesFromTable;
+    use UsesImportsAndTraits;
     
     /**
      * The name of argument name.
@@ -34,16 +35,6 @@ class MakeEntity extends GeneratorCommand
      * @var string
      */
     protected $description = 'Generate a new entity in the given module.';
-    
-    /**
-     * @var array
-     */
-    protected $imports = [];
-    
-    /**
-     * @var array
-     */
-    protected $traits = [];
     
     /**
      * Get the destination file path.
@@ -84,30 +75,6 @@ class MakeEntity extends GeneratorCommand
             'IMPORTS' => $this->getTemplateImports(),
             'TRAITS' => $this->getTraits(),
         ]))->render();
-    }
-    
-    /**
-     * @return string
-     */
-    protected function getTemplateImports() : string
-    {
-        return collect($this->imports)->map(function($import) {
-            return 'use ' . $import . ';' . PHP_EOL;
-        })->implode('');
-    }
-    
-    /**
-     * @return string
-     */
-    protected function getTraits() : string
-    {
-        if (! count($this->traits)) {
-            return '';
-        }
-        
-        $traits = collect($this->traits)->implode(', ');
-        
-        return PHP_EOL . '    use ' . $traits . ';' . PHP_EOL . '    ';
     }
     
     /**

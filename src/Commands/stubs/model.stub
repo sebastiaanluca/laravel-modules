@@ -3,9 +3,9 @@
 namespace $NAMESPACE$;
 
 use Illuminate\Database\Eloquent\Model;
-
+$IMPORTS$
 class $CLASS$ extends Model
-{$CONNECTION$
+{$TRAITS$$CONNECTION$
     /**
      * The database table used by the model.
      *
@@ -18,7 +18,7 @@ class $CLASS$ extends Model
      *
      * @var array
      */
-    protected $guarded = [$GUARDED$];
+    protected $guarded = [$GUARDED$];$TIMESTAMPS$
     
     /**
      * The attributes that should be casted to native types.
