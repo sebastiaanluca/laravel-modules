@@ -21,6 +21,7 @@ class MakeRepository extends MultiGeneratorCommand
      * @var string
      */
     protected $signature = 'module:make:repository
+                            {resource : The singular snake case name of the resource}
                             {model : The full namespace and name of the model}
                             {module : The name of the module to create the model in}';
     
@@ -32,13 +33,39 @@ class MakeRepository extends MultiGeneratorCommand
     protected $description = 'Generate a new Eloquent repository and interface in the given module.';
     
     /**
+     * Execute the console command.
+     */
+    public function fire()
+    {
+        parent::fire();
+        
+        $namespace = $this->getClassNamespace($this->getModule());
+        
+        $interface = '\\' . $namespace . '\\' . $this->getInterfaceClassName() . '::class';
+        $repository = '\\' . $namespace . '\\' . $this->getRepositoryClassName() . '::class';
+        
+        $this->info('Now add the following line to the <bindRepositories> method in your module service provider:');
+        $this->info('$this->app->bind(' . $interface . ', ' . $repository . ');');
+    }
+    
+    /**
+     * Get the resource name.
+     *
+     * @return string
+     */
+    protected function getResourceName()
+    {
+        return studly_case($this->argument('resource'));
+    }
+    
+    /**
      * Get the name of the repository interface.
      *
      * @return string
      */
     protected function getInterfaceClassName()
     {
-        return "{$this->getClass()}Repository";
+        return "{$this->getResourceName()}Repository";
     }
     
     /**
@@ -48,7 +75,7 @@ class MakeRepository extends MultiGeneratorCommand
      */
     protected function getRepositoryClassName()
     {
-        return "{$this->getClass()}EloquentRepository";
+        return "{$this->getResourceName()}EloquentRepository";
     }
     
     /**
@@ -96,21 +123,5 @@ class MakeRepository extends MultiGeneratorCommand
             'MODEL' => $this->argument('model'),
             'MODEL_BASENAME' => $this->getClass(),
         ]);
-    }
-    
-    /**
-     * Execute the console command.
-     */
-    public function fire()
-    {
-        parent::fire();
-        
-        $namespace = $this->getClassNamespace($this->getModule());
-        
-        $interface = '\\' . $namespace . '\\' . $this->getInterfaceClassName() . '::class';
-        $repository = '\\' . $namespace . '\\' . $this->getRepositoryClassName() . '::class';
-        
-        $this->info('Now add the following line to the <bindRepositories> method in your module service provider:');
-        $this->info('$this->app->bind(' . $interface . ', ' . $repository . ');');
     }
 }
