@@ -9,6 +9,7 @@ use Nwidart\Modules\Traits\ModuleCommandTrait;
 class MakeValidator extends GeneratorCommand
 {
     use ModuleCommandTrait;
+    use GeneratesFromTable;
     
     /**
      * The name of argument being used.
@@ -26,7 +27,8 @@ class MakeValidator extends GeneratorCommand
                             {resource : The singular name of the resource}
                             {module : The name of the module to create the validator in}
                             {--name= : The studly case class name of the validator}
-                            {--table= : Pre-fill the fields to validate}';
+                            {--table= : Pre-fill the fields to validate by reading them from a database table}
+                            {--connection= : The database connection to use}';
     
     /**
      * The console command description.
@@ -104,20 +106,20 @@ class MakeValidator extends GeneratorCommand
      */
     protected function getRules()
     {
-        if (! $table = $this->option('table')) {
+        if (! $this->hasTableOption()) {
             return '';
         }
         
-        $table = app(TableReader::class)->read($table);
-        $validatable = $this->getValidatableFields($table);
+        $reader = $this->getTableReader();
+        $validatable = $this->getValidatableFields($reader);
         
-        $rules = $table->getRawFields()->filter(function($item) use ($validatable) {
+        $rules = $reader->getRawFields()->filter(function($item) use ($validatable) {
             // Only keep validatable and non-ID fields
             return in_array($item['field'], $validatable) && ! ends_with($item['field'], '_id');
-        })->map(function($item) use ($table) {
+        })->map(function($item) use ($reader) {
             return [
                 'field' => $item['field'],
-                'rules' => $this->getRulesForField($item, $table),
+                'rules' => $this->getRulesForField($item, $reader),
             ];
         })->pluck('rules', 'field')->toArray();
         

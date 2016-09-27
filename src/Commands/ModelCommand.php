@@ -3,12 +3,12 @@
 namespace Nwidart\Modules\Commands;
 
 use Nwidart\Modules\Support\Stub;
-use Nwidart\Modules\Support\TableReader;
 use Nwidart\Modules\Traits\ModuleCommandTrait;
 
 class ModelCommand extends GeneratorCommand
 {
     use ModuleCommandTrait;
+    use GeneratesFromTable;
     
     /**
      * The name of argument name.
@@ -26,7 +26,7 @@ class ModelCommand extends GeneratorCommand
                             {name : The name of the model}
                             {module : The name of the module to create the model in}
                             {--table= : Base the model on the structure of an existing database table}
-                            {--connection= : The connection to use}';
+                            {--connection= : The database connection to use}';
     
     /**
      * The console command description.
@@ -42,18 +42,13 @@ class ModelCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getFullyQualifiedName());
         
-        if ($table = $this->option('table')) {
+        if ($this->hasTableOption()) {
             /** @var \Nwidart\Modules\Support\TableReader $reader */
-            $reader = app(TableReader::class);
+            $reader = $this->getTableReader();
             
-            if ($connection = $this->option('connection')) {
-                $reader->setConnection($connection);
-            }
-            
-            $reader = $reader->read($table);
-            
-            $connection = $reader->getConnection()->getName();
-            $connection = <<<PHP
+            if ($this->hasConnectionOption()) {
+                $connection = $reader->getConnection()->getName();
+                $connection = <<<PHP
     
     /**
      * The connection name for the model.
@@ -63,6 +58,7 @@ class ModelCommand extends GeneratorCommand
     protected \$connection = '$connection';
     
 PHP;
+            }
             
             $table = $reader->getTable();
             $guarded = $this->format($reader->getGuarded());
