@@ -14,58 +14,6 @@ class EloquentRepository extends BaseEloquentRepository
     use PerformsActions, HandlesMethodExtensions, ReturnsEntities;
     
     /**
-     * Execute given callback and return the result.
-     *
-     * @param string $class
-     * @param string $method
-     * @param array $args
-     * @param \Closure $closure
-     *
-     * @return mixed
-     */
-    protected function executeCallback($class, $method, $args, Closure $closure)
-    {
-        // Wrap in another closure to cache the converted entity and
-        // not convert after first caching the original database result
-        return parent::executeCallback($class, $method, $args, function() use ($closure) {
-            return $this->convertToEntityResult(call_user_func($closure));
-        });
-    }
-    
-    /**
-     * Get the dynamically handled method extensions.
-     *
-     * @return array
-     */
-    protected function getMethodExtensions() : array
-    {
-        return [
-            'OrFail' => [$this, 'validateResult'],
-        ];
-    }
-    
-    /**
-     * Throw exceptions if a result is not valid.
-     *
-     * @param mixed $result
-     * @param string $method
-     *
-     * @return mixed
-     */
-    protected function validateResult($result, string $method)
-    {
-        if (is_null($result)) {
-            throw NoRecordsFound::emptyResult();
-        }
-        
-        if ($result instanceof Collection && count($result) <= 0) {
-            throw NoRecordsFound::emptyResultSet();
-        }
-        
-        return $result;
-    }
-    
-    /**
      * Create a new entity with the given attributes.
      *
      * @param array $attributes
@@ -106,5 +54,57 @@ class EloquentRepository extends BaseEloquentRepository
         // TODO: should be able to pass an Entity to delete ($id = $id instanceof Entity ? $id->id : $id)
         
         return $this->performAction('delete', $id);
+    }
+    
+    /**
+     * Get the dynamically handled method extensions.
+     *
+     * @return array
+     */
+    protected function getMethodExtensions() : array
+    {
+        return [
+            'OrFail' => [$this, 'validateResult'],
+        ];
+    }
+    
+    /**
+     * Execute given callback and return the result.
+     *
+     * @param string $class
+     * @param string $method
+     * @param array $args
+     * @param \Closure $closure
+     *
+     * @return mixed
+     */
+    protected function executeCallback($class, $method, $args, Closure $closure)
+    {
+        // Wrap in another closure to cache the converted entity and
+        // not convert after first caching the original database result
+        return parent::executeCallback($class, $method, $args, function() use ($closure) {
+            return $this->convertToEntityResult(call_user_func($closure));
+        });
+    }
+    
+    /**
+     * Throw exceptions if a result is not valid.
+     *
+     * @param mixed $result
+     * @param string $method
+     *
+     * @return mixed
+     */
+    protected function validateResult($result, string $method)
+    {
+        if (is_null($result)) {
+            throw NoRecordsFound::emptyResult();
+        }
+        
+        if ($result instanceof Collection && count($result) <= 0) {
+            throw NoRecordsFound::emptyResultSet();
+        }
+        
+        return $result;
     }
 }
