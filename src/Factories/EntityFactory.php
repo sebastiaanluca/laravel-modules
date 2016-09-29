@@ -7,9 +7,26 @@ use Illuminate\Support\Collection;
 use Nwidart\Modules\Entities\Entity;
 use phpDocumentor\Reflection\DocBlockFactory;
 use ReflectionProperty;
+use Valinta\Users\Entities\User;
 
 class EntityFactory
 {
+    /**
+     * Create an entity from an array of attributes.
+     *
+     * @param string $entity
+     * @param array $attributes
+     *
+     * @return \Nwidart\Modules\Entities\Entity
+     */
+    public static function create(string $entity, array $attributes) : Entity
+    {
+        /** @var \Nwidart\Modules\Entities\Entity $entity */
+        $entity = new $entity;
+        
+        return static::fill($entity, $attributes);
+    }
+    
     /**
      * Generate a new entity of a certain type based on the given object.
      *
@@ -20,6 +37,8 @@ class EntityFactory
      */
     public static function createFromObject(string $entity, $object) : Entity
     {
+        ddd(static::getDynamicGetters(new User()));
+        
         /** @var \Nwidart\Modules\Entities\Entity $entity */
         $entity = new $entity;
         
@@ -39,15 +58,24 @@ class EntityFactory
      */
     protected static function fill(Entity $entity, array $attributes, $casts = true) : Entity
     {
-        $dynamicTypes = static::getDynamicFields($entity);
+        $getters = static::getDynamicGetters($entity);
+        $setters = static::getDynamicSetters($entity);
+        
         $types = static::getCastTypes($entity);
         
         foreach ($attributes as $attribute => $value) {
             $type = $types[$attribute];
             
+            // Dynamic value setting
+            if (in_array($attribute, $setters)) {
+                call_user_func([$entity, 'set' . title_case($attribute) . 'Attribute'], $value);
+                
+                $value = $entity->{$attribute};
+            }
+            
             // Second conditional checks if there's something to cast to (i.e. missing doc block)
             if ($casts && ! is_null($type)) {
-                $value = static::castAttribute($attribute, $value, $type, $nullable = in_array($attribute, $dynamicTypes));
+                $value = static::castAttribute($attribute, $value, $type, $nullable = in_array($attribute, $getters));
             }
             
             $entity->{$attribute} = $value;
@@ -184,16 +212,30 @@ class EntityFactory
     }
     
     /**
-     * Get the names of the dynamic fields.
+     * Get the names of the dynamic getters.
      *
      * @param \Nwidart\Modules\Entities\Entity $entity
      *
      * @return array
      */
-    protected static function getDynamicFields(Entity $entity) : array
+    protected static function getDynamicGetters(Entity $entity) : array
     {
         return collect(get_class_methods($entity))
             ->between('get', 'Attribute')
+            ->methodize('camel_case')->all();
+    }
+    
+    /**
+     * Get the names of the dynamic setters.
+     *
+     * @param \Nwidart\Modules\Entities\Entity $entity
+     *
+     * @return array
+     */
+    protected static function getDynamicSetters(Entity $entity) : array
+    {
+        return collect(get_class_methods($entity))
+            ->between('set', 'Attribute')
             ->methodize('camel_case')->all();
     }
     
@@ -206,7 +248,7 @@ class EntityFactory
      */
     protected static function getDynamicAttributes(Entity $entity)
     {
-        return collect(static::getDynamicFields($entity))->reduce(function(Collection $items, $field) use ($entity) {
+        return collect(static::getDynamicGetters($entity))->reduce(function(Collection $items, $field) use ($entity) {
             $items[$field] = call_user_func([$entity, 'get' . title_case($field) . 'Attribute']);
             
             return $items;
