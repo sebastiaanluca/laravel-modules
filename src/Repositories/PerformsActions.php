@@ -48,6 +48,27 @@ trait PerformsActions
     }
     
     /**
+     * Get a complete and updated record from the database.
+     *
+     * Instead of relying on the local version of a model when creating a record, fetch the newly
+     * created version from the database which has all fields completely populated.
+     *
+     * @param array $result
+     *
+     * @return array
+     */
+    protected function getFreshRecord(array $result) : array
+    {
+        $local = $result[1];
+        
+        $fresh = $this->find($local->id);
+        
+        $result[1] = $fresh;
+        
+        return $result;
+    }
+    
+    /**
      * Perform a database action.
      *
      * @param string $action
@@ -58,6 +79,10 @@ trait PerformsActions
     protected function performAction(string $action, ...$parameters)
     {
         $result = parent::$action(...$parameters);
+        
+        if ($action == 'create') {
+            $result = $this->getFreshRecord($result);
+        }
         
         $this->validateAction($action, $result);
         
