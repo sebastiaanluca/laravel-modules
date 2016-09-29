@@ -61,6 +61,8 @@ trait PerformsActions
         
         $this->validateAction($action, $result);
         
-        return $this->extractActionResult($result, $action);
+        $result = $this->extractActionResult($result, $action);
+        
+        return $this->convertToEntityResult($result);
     }
 }
