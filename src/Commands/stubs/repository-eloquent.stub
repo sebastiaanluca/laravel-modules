@@ -2,7 +2,7 @@
 
 namespace $NAMESPACE$;
 
-use Rinvex\Repository\Repositories\EloquentRepository;
+use Nwidart\Modules\Repositories\EloquentRepository;
 use $ENTITY$;
 use $MODEL$;
 
