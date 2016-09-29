@@ -8,6 +8,50 @@ use Nwidart\Modules\Exceptions\Repositories\NoRecordsFound;
 trait PerformsActions
 {
     /**
+     * Perform a database action.
+     *
+     * @param string $action
+     * @param array $parameters
+     *
+     * @return mixed
+     */
+    protected function performAction(string $action, ...$parameters)
+    {
+        $result = parent::$action(...$parameters);
+        
+        if ($action == 'create') {
+            $result = $this->getFreshRecord($result);
+        }
+        
+        $this->validateAction($action, $result);
+        
+        $result = $this->extractActionResult($result, $action);
+        
+        return $this->convertToEntityResult($result);
+    }
+    
+    /**
+     * Get a complete and updated record from the database.
+     *
+     * Instead of relying on the local version of a model when creating a record, fetch the newly
+     * created version from the database which has all fields completely populated.
+     *
+     * @param array $result
+     *
+     * @return array
+     */
+    protected function getFreshRecord(array $result) : array
+    {
+        $local = $result[1];
+        
+        $fresh = $this->find($local->id);
+        
+        $result[1] = $fresh;
+        
+        return $result;
+    }
+    
+    /**
      * Validate a database action such as create, update, or delete.
      *
      * @param string $action
@@ -45,49 +89,5 @@ trait PerformsActions
         }
         
         return $result[1];
-    }
-    
-    /**
-     * Get a complete and updated record from the database.
-     *
-     * Instead of relying on the local version of a model when creating a record, fetch the newly
-     * created version from the database which has all fields completely populated.
-     *
-     * @param array $result
-     *
-     * @return array
-     */
-    protected function getFreshRecord(array $result) : array
-    {
-        $local = $result[1];
-        
-        $fresh = $this->find($local->id);
-        
-        $result[1] = $fresh;
-        
-        return $result;
-    }
-    
-    /**
-     * Perform a database action.
-     *
-     * @param string $action
-     * @param array $parameters
-     *
-     * @return mixed
-     */
-    protected function performAction(string $action, ...$parameters)
-    {
-        $result = parent::$action(...$parameters);
-        
-        if ($action == 'create') {
-            $result = $this->getFreshRecord($result);
-        }
-        
-        $this->validateAction($action, $result);
-        
-        $result = $this->extractActionResult($result, $action);
-        
-        return $this->convertToEntityResult($result);
     }
 }
