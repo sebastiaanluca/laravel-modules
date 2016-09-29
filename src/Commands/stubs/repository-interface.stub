@@ -7,5 +7,4 @@ use Rinvex\Repository\Contracts\RepositoryContract;
 
 interface $CLASS$ extends RepositoryContract, CacheableContract
 {
-    
 }
