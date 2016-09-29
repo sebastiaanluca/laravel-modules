@@ -7,7 +7,6 @@ use Illuminate\Support\Collection;
 use Nwidart\Modules\Entities\Entity;
 use phpDocumentor\Reflection\DocBlockFactory;
 use ReflectionProperty;
-use Valinta\Users\Entities\User;
 
 class EntityFactory
 {
@@ -37,8 +36,6 @@ class EntityFactory
      */
     public static function createFromObject(string $entity, $object) : Entity
     {
-        ddd(static::getDynamicGetters(new User()));
-        
         /** @var \Nwidart\Modules\Entities\Entity $entity */
         $entity = new $entity;
         
@@ -133,8 +130,6 @@ class EntityFactory
     }
     
     /**
-     *
-     *
      * @param $attribute
      * @param $value
      * @param $type
