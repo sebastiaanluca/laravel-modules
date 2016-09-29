@@ -49,13 +49,13 @@ class $CLASS$ extends Controller
     /**
      * Create a new resource.
      * 
-     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request$STORE_VALIDATOR_PHPDOC$
      * 
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request) : RedirectResponse
+    public function store(Request $request$STORE_VALIDATOR_PARAMETER$) : RedirectResponse
     {
-        $this->$RESOURCE$->create($request->all());
+        $STORE_REPOSITORY_CALL$
         
         return redirect()->route('$RESOURCE$.index');
     }
@@ -92,15 +92,15 @@ class $CLASS$ extends Controller
     /**
      * Update the given resource.
      * 
-     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request$UPDATE_VALIDATOR_PHPDOC$
      * @param string $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, string $id) : RedirectResponse
+    public function update(Request $request$UPDATE_VALIDATOR_PARAMETER$, string $id) : RedirectResponse
     {
-        $this->$RESOURCE$->update($id, $request->all());
-        
+        $UPDATE_REPOSITORY_CALL$
+
         return redirect()->route('$RESOURCE$.show', $id);
     }
     
