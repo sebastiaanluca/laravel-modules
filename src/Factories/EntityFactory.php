@@ -215,7 +215,13 @@ class EntityFactory
      */
     protected static function getDynamicGetters(Entity $entity) : array
     {
-        return collect(get_class_methods($entity))
+        $methods = get_class_methods($entity);
+        
+        if (empty($methods)) {
+            return [];
+        }
+        
+        return collect($methods)
             ->between('get', 'Attribute')
             ->methodize('camel_case')->all();
     }
@@ -229,7 +235,13 @@ class EntityFactory
      */
     protected static function getDynamicSetters(Entity $entity) : array
     {
-        return collect(get_class_methods($entity))
+        $methods = get_class_methods($entity);
+        
+        if (empty($methods)) {
+            return [];
+        }
+        
+        return collect($methods)
             ->between('set', 'Attribute')
             ->methodize('camel_case')->all();
     }
