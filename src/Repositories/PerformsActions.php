@@ -42,9 +42,10 @@ trait PerformsActions
      */
     protected function getFreshRecord(array $result) : array
     {
+        /** @var \Illuminate\Database\Eloquent\Model $local */
         $local = $result[1];
         
-        $fresh = $this->find($local->id);
+        $fresh = $this->find($local->getKey());
         
         $result[1] = $fresh;
         
