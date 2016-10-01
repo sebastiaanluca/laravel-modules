@@ -2,9 +2,10 @@
 
 namespace $NAMESPACE$;
 
+use Nwidart\Modules\Entities\BaseEntity;
 use Nwidart\Modules\Entities\Entity;
 $IMPORTS$
-class $CLASS$ implements Entity
+class $CLASS$ extends BaseEntity implements Entity
 {$TRAITS$
 $PROPERTIES$
 }
