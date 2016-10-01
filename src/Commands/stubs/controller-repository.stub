@@ -70,7 +70,7 @@ class $CLASS$ extends Controller
      */
     public function show(Request $request, string $id) : View
     {
-        $$RESOURCE_SINGULAR$ = $this->$RESOURCE$->find($id);
+        $$RESOURCE_SINGULAR$ = $this->$RESOURCE$->findOrFail($id);
         
         return view('$MODULE$::pages/$RESOURCE$/show', compact('$RESOURCE_SINGULAR$'));
     }
@@ -84,7 +84,7 @@ class $CLASS$ extends Controller
      */
     public function edit(string $id) : View
     {
-        $$RESOURCE_SINGULAR$ = $this->$RESOURCE$->find($id);
+        $$RESOURCE_SINGULAR$ = $this->$RESOURCE$->findOrFail($id);
         
         return view('$MODULE$::pages/$RESOURCE$/edit', compact('$RESOURCE_SINGULAR$'));
     }
