@@ -17,13 +17,18 @@ trait PerformsActions
      */
     protected function performAction(string $action, ...$parameters)
     {
+        // Perform the following actions and searches without caching or conversions
+        $this->preventCallbackExecution = true;
+        
         $result = parent::$action(...$parameters);
         
         if ($action == 'create') {
             $result = $this->getFreshRecord($result);
         }
         
-        $this->validateAction($action, $result);
+        $this->preventCallbackExecution = false;
+        
+        $this->validateActionResult($action, $result);
         
         $result = $this->extractActionResult($result, $action);
         
@@ -58,7 +63,7 @@ trait PerformsActions
      * @param string $action
      * @param mixed $result
      */
-    protected function validateAction(string $action, $result)
+    protected function validateActionResult(string $action, $result)
     {
         if (! is_array($result)) {
             return;

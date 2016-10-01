@@ -3,6 +3,7 @@
 namespace Nwidart\Modules\Repositories;
 
 use Closure;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Nwidart\Modules\Entities\Entity;
 use Nwidart\Modules\Exceptions\Repositories\NoRecordsFound;
@@ -12,6 +13,11 @@ use Rinvex\Repository\Repositories\EloquentRepository as BaseEloquentRepository;
 class EloquentRepository extends BaseEloquentRepository
 {
     use PerformsActions, HandlesMethodExtensions, ReturnsEntities;
+    
+    /**
+     * @var bool
+     */
+    protected $preventCallbackExecution;
     
     /**
      * Create a new entity with the given attributes.
@@ -37,9 +43,17 @@ class EloquentRepository extends BaseEloquentRepository
      */
     public function update($id, array $attributes = []) : Entity
     {
-        // TODO: should be able to pass an Entity as $attributes (break it down into an array by using get_object_vars() before passing on)
+        $instance = $this->getRawRecord($id);
         
-        return $this->performAction('update', $id, $attributes);
+        // Take attribute values from the entity itself
+        // unless selective attributes are specified
+        if ($id instanceof Entity && empty($attributes)) {
+            $attributes = get_object_vars($id);
+        }
+        
+        $result = $this->performAction('update', $instance, $attributes);
+        
+        return $result;
     }
     
     /**
@@ -51,9 +65,23 @@ class EloquentRepository extends BaseEloquentRepository
      */
     public function delete($id) : bool
     {
-        // TODO: should be able to pass an Entity to delete ($id = $id instanceof Entity ? $id->id : $id)
+        $instance = $this->getRawRecord($id);
         
-        return $this->performAction('delete', $id);
+        return $this->performAction('delete', $instance);
+    }
+    
+    /**
+     * Delete all or a subset of records.
+     *
+     * Great to use with wheres to destroy a whole set of records at once.
+     *
+     * @return int The number of deleted records.
+     */
+    public function deleteAll() : int
+    {
+        return $this->executeCallback(get_called_class(), __FUNCTION__, func_get_args(), function() {
+            return $this->prepareQuery($this->createModel())->delete();
+        });
     }
     
     /**
@@ -69,6 +97,25 @@ class EloquentRepository extends BaseEloquentRepository
     }
     
     /**
+     * @param integer|string|\Nwidart\Modules\Entities\Entity $id
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    protected function getRawRecord($id) : Model
+    {
+        // Perform the following actions and searches without caching or conversions
+        $this->preventCallbackExecution = true;
+        
+        $id = $id instanceof Entity ? $id->getKeyValue() : $id;
+        
+        $raw = $this->find($id);
+        
+        $this->preventCallbackExecution = false;
+        
+        return $raw;
+    }
+    
+    /**
      * Execute given callback and return the result.
      *
      * @param string $class
@@ -80,6 +127,16 @@ class EloquentRepository extends BaseEloquentRepository
      */
     protected function executeCallback($class, $method, $args, Closure $closure)
     {
+        // Prevent any conversions and caching when the repository
+        // is performing an internal search or action
+        if ($this->preventCallbackExecution) {
+            $result = call_user_func($closure);
+            
+            $this->resetRepository();
+            
+            return $result;
+        }
+        
         // Wrap in another closure to cache the converted entity and
         // not convert after first caching the original database result
         return parent::executeCallback($class, $method, $args, function() use ($closure) {

@@ -25,7 +25,7 @@ trait ReturnsEntities
     protected function convertToEntityResult($result)
     {
         // Handle non-entity result
-        if (is_null($result) || is_bool($result)) {
+        if (is_null($result) || is_bool($result) || is_integer($result)) {
             return $result;
         }
         
