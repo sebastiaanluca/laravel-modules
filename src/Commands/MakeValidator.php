@@ -106,7 +106,7 @@ class MakeValidator extends GeneratorCommand
      */
     protected function getRules()
     {
-        if (! $this->hasTableOption()) {
+        if (! $this->hasTable()) {
             return '';
         }
         

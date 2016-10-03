@@ -43,11 +43,11 @@ class ModelCommand extends GeneratorCommand
     {
         $module = $this->laravel['modules']->findOrFail($this->getFullyQualifiedName());
         
-        if ($this->hasTableOption()) {
+        if ($this->hasTable()) {
             /** @var \Nwidart\Modules\Support\TableReader $reader */
             $reader = $this->getTableReader();
             
-            if ($this->hasConnectionOption()) {
+            if ($this->hasConnection()) {
                 $connection = $reader->getConnection()->getName();
                 $connection = <<<PHP
     

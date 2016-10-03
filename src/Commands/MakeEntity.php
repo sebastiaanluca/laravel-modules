@@ -83,7 +83,7 @@ class MakeEntity extends GeneratorCommand
     // TODO: simplify/extract
     protected function getProperties() : string
     {
-        if (! $this->hasTableOption()) {
+        if (! $this->hasTable()) {
             return '';
         }
         

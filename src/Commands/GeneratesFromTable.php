@@ -14,9 +14,9 @@ trait GeneratesFromTable
     /**
      * @return bool
      */
-    protected function hasTableOption() : bool
+    protected function hasTable() : bool
     {
-        return $this->hasOption('table');
+        return ! is_null($this->option('table'));
     }
     
     /**
@@ -30,9 +30,9 @@ trait GeneratesFromTable
     /**
      * @return bool
      */
-    protected function hasConnectionOption() : bool
+    protected function hasConnection() : bool
     {
-        return $this->hasOption('connection');
+        return ! is_null($this->option('connection'));
     }
     
     /**
