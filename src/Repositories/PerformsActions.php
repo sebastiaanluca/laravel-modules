@@ -71,7 +71,7 @@ trait PerformsActions
         
         // Action result instance is invalid
         if (count($result) > 1 && is_null($result[1])) {
-            throw NoRecordsFound::emptyResult();
+            throw NoRecordsFound::emptyResult($this->entity);
         }
         
         // Action itself failed to make any changes

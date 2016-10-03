@@ -28,7 +28,7 @@ class EloquentRepository extends BaseEloquentRepository
      */
     public function create(array $attributes = []) : Entity
     {
-        // TODO: should be able to pass an Entity as $attributes (break it down into an array by using get_object_vars() before passing on)(can't because method signature differs?)
+        // TODO: should be able to pass an Entity as $attributes (break it down into an array by using get_object_vars() before passing on)(can't because method signature differs?) (new method "save" or "createFromEntity")
         
         return $this->performAction('create', $attributes);
     }
@@ -155,11 +155,11 @@ class EloquentRepository extends BaseEloquentRepository
     protected function validateResult($result, string $method)
     {
         if (is_null($result)) {
-            throw NoRecordsFound::emptyResult();
+            throw NoRecordsFound::emptyResult($this->entity);
         }
         
         if ($result instanceof Collection && count($result) <= 0) {
-            throw NoRecordsFound::emptyResultSet();
+            throw NoRecordsFound::emptyResultSet($this->entity);
         }
         
         return $result;
