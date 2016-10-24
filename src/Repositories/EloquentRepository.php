@@ -85,6 +85,35 @@ class EloquentRepository extends BaseEloquentRepository
     }
     
     /**
+     * Find all entities.
+     *
+     * @param array $attributes
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function get($attributes = ['*'])
+    {
+        return $this->executeCallback(get_called_class(), __FUNCTION__, func_get_args(), function() use ($attributes) {
+            return $this->prepareQuery($this->createModel())->get($attributes);
+        });
+    }
+    
+    /**
+     * Dynamically pass missing methods to the model.
+     *
+     * @param string $method
+     * @param array $parameters
+     *
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        return $this->executeCallback(get_called_class(), __FUNCTION__, func_get_args(), function() use ($method, $parameters) {
+            return call_user_func_array(['parent', $method], $parameters);
+        });
+    }
+    
+    /**
      * Get the dynamically handled method extensions.
      *
      * @return array
