@@ -129,6 +129,7 @@ class EloquentRepository extends BaseEloquentRepository
      * @param integer|string|\Nwidart\Modules\Entities\Entity $id
      *
      * @return \Illuminate\Database\Eloquent\Model
+     * @throws \Exception
      */
     protected function getRawRecord($id) : Model
     {
@@ -136,6 +137,11 @@ class EloquentRepository extends BaseEloquentRepository
         $this->preventCallbackExecution = true;
         
         $id = $id instanceof Entity ? $id->getKeyValue() : $id;
+        
+        // Prevent passing an array to find() as it will return a collection and break the flow
+        if (! is_string($id) && ! is_int($id)) {
+            throw new \Exception('The given id should be a string or an integer.');
+        }
         
         $raw = $this->find($id);
         
