@@ -223,6 +223,7 @@ config.devServer = {
             changeOrigin: true,
             autoRewrite: true,
             xfwd: true,
+            secure: false,
         },
     },
     
