@@ -31,7 +31,7 @@ function getModules(exclude) {
     let modules = getDirectories(path.resolve(process.cwd(), 'modules'))
     
     // Build full path
-    let buildModules = []
+    let buildModules = {}
     
     for (const module of modules) {
         // Prevent compiling of resources in main modules directory or when it's manually excluded
@@ -49,7 +49,7 @@ function getModules(exclude) {
             continue
         }
         
-        buildModules.push(entryScript)
+        buildModules[module] = entryScript
     }
     
     return buildModules
