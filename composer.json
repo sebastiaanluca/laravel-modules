@@ -31,12 +31,6 @@
         "phpro/grumphp": "^0.9.1",
         "friendsofphp/php-cs-fixer": "^1.11"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:sebastiaanluca/repository.git"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Nwidart\\Modules\\": "src"
