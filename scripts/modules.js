@@ -15,54 +15,44 @@ function getDirectories(srcpath) {
 
 function fileExists(filePath) {
     try {
-        return fs.statSync(filePath).isFile();
+        return fs.statSync(path.resolve('./modules', filePath)).isFile()
     }
     catch (err) {
-        return false;
+        return false
     }
 }
 
 function getModules(exclude) {
-    
-    if (! Array.isArray(exclude)) {
+    if (!Array.isArray(exclude)) {
         exclude = []
     }
     
-    const directories = getDirectories(path.resolve(process.cwd(), 'modules'))
-    let modules = {}
-    
-    directories.forEach(directory => {
-        const subDirectories = getDirectories('modules/' + directory)
-        
-        subDirectories.forEach(subDirectory => modules[subDirectory] = path.join(directory, subDirectory))
-    })
+    // Get all modules in the root directory of /modules
+    let modules = getDirectories(path.resolve(process.cwd(), 'modules'))
     
     // Build full path
-    for (let mod in modules) {
-        if (modules.hasOwnProperty(mod)) {
-            
-            // Prevent compiling of resources in main modules directory
-            // or when it's manually excluded
-            if (modules[mod] === 'sebastiaanluca/modules' || exclude.indexOf(modules[mod]) !== - 1) {
-                
-                console.info(`[NOTICE] Excluding module "${modules[mod]}" from build process`)
-                
-                delete modules[mod]
-                continue
-            }
-            
-            // Concatenate the path to the module resource entry file
-            modules[mod] = './' + path.join(modules[mod], 'resources/scripts/' + mod + '.js')
-            
-            // Remove module if entry file does not exist
-            if (! fileExists('modules/' + modules[mod])) {
-                console.info(`[NOTICE] Module "${mod}" does not have an entry file located at ${modules[mod]}`)
-                delete modules[mod]
-            }
+    let buildModules = []
+    
+    for (const module of modules) {
+        // Prevent compiling of resources in main modules directory or when it's manually excluded
+        if (module === 'sebastiaanluca/modules' || exclude.indexOf(module) !== -1) {
+            console.info(`[NOTICE] Excluding module "${module}" from build process`)
+            continue
         }
+        
+        // Concatenate the path to the module resource entry file
+        const entryScript = `./${module}/resources/scripts/main.js`
+        
+        // Verify entry script existence
+        if (!fileExists(entryScript)) {
+            console.info(`[NOTICE] Module "${module}" does not have an entry file located at ${entryScript}`)
+            continue
+        }
+        
+        buildModules.push(entryScript)
     }
     
-    return modules
+    return buildModules
 }
 
 //
