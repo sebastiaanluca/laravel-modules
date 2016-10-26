@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Schema\Blueprint;
-use Nwidart\Modules\Migrations\TransactionalMigration as Migration;
+use SebastiaanLuca\Migrations\TransactionalMigration as Migration;
 
 class $CLASS$ extends Migration
 {

@@ -2,7 +2,7 @@
 
 namespace $CLASS_NAMESPACE$;
 
-use Nwidart\Modules\Validators\Validator;
+use SebastiaanLuca\Validator\Validators\Validator;
 
 class $CLASS$ extends Validator
 {

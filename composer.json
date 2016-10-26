@@ -22,7 +22,10 @@
         "laravel/framework": "5.3.*",
         "laravelcollective/html": "5.3.*",
         "phpdocumentor/reflection-docblock": "^3.1",
-        "rinvex/repository": "dev-feature/add-entities as 2.0.1"
+        "rinvex/repository": "dev-feature/add-entities as 2.0.1",
+        "sebastiaanluca/laravel-helpers": "dev-develop",
+        "sebastiaanluca/laravel-unbreakable-migrations": "dev-develop",
+        "sebastiaanluca/laravel-validator": "dev-develop"
     },
     "require-dev": {
         "phpunit/phpunit": "~4",
