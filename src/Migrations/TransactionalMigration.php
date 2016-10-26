@@ -7,7 +7,7 @@ use Exception;
 abstract class TransactionalMigration extends Migration
 {
     /**
-     * Execute the migrationm command inside a transaction layer.
+     * Execute the migration command inside a transaction layer.
      *
      * @param string $method
      */
