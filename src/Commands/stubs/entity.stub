@@ -2,8 +2,8 @@
 
 namespace $NAMESPACE$;
 
-use Nwidart\Modules\Entities\BaseEntity;
-use Nwidart\Modules\Entities\Entity;
+use Rinvex\Repository\Entities\BaseEntity;
+use Rinvex\Repository\Entities\Entity;
 $IMPORTS$
 class $CLASS$ extends BaseEntity implements Entity
 {$TRAITS$
