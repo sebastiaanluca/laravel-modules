@@ -1,44 +1,62 @@
 {
-  "name": "nwidart/laravel-modules",
-  "description": "Laravel Module management",
-  "keywords": [
-    "modules",
-    "laravel",
-    "nwidart",
-    "module",
-    "rad"
-  ],
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Nicolas Widart",
-      "email": "n.widart@gmail.com",
-      "homepage": "https://nicolaswidart.com",
-      "role": "Developer"
-    }
-  ],
-  "require": {
-    "php": ">=5.5",
-    "laravel/framework": "5.1.*|5.2.*|5.3.*",
-    "laravelcollective/html": "5.1.*|5.2.*|5.3.*"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "~4",
-    "mockery/mockery": "~0.9",
-    "orchestra/testbench": "^3.1|^3.2|^3.3",
-    "phpro/grumphp": "^0.9.1",
-    "friendsofphp/php-cs-fixer": "^1.11"
-  },
-  "autoload": {
-    "psr-4": {
-      "Nwidart\\Modules\\": "src"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Nwidart\\Modules\\Tests\\": "tests"
-    }
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+    "name": "nwidart/laravel-modules",
+    "description": "Laravel Module management",
+    "keywords": [
+        "modules",
+        "laravel",
+        "nwidart",
+        "module",
+        "rad"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com",
+            "homepage": "https://nicolaswidart.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Sebastiaan Luca",
+            "email": "hello@sebastiaanluca.com",
+            "homepage": "https://www.sebastiaanluca.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.5",
+        "laravel/framework": "5.1.*|5.2.*|5.3.*",
+        "laravelcollective/html": "5.1.*|5.2.*|5.3.*",
+        "phpdocumentor/reflection-docblock": "^3.1",
+        "rinvex/repository": "dev-feature/add-entities as 2.0.1",
+        "sebastiaanluca/laravel-helpers": "dev-develop",
+        "sebastiaanluca/laravel-router": "dev-develop as 2.0.*",
+        "sebastiaanluca/laravel-unbreakable-migrations": "dev-develop",
+        "sebastiaanluca/laravel-validator": "dev-develop"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4",
+        "mockery/mockery": "~0.9",
+        "orchestra/testbench": "^3.1|^3.2|^3.3",
+        "phpro/grumphp": "^0.9.1",
+        "friendsofphp/php-cs-fixer": "^1.11"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:sebastiaanluca/repository.git"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Nwidart\\Modules\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Nwidart\\Modules\\Tests\\": "tests"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
