@@ -35,8 +35,7 @@ return [
             //            'views/index' => 'Resources/views/index.blade.php',
             //            'views/master' => 'Resources/views/layouts/master.blade.php',
             
-            // TODO: move to e.g. config/modules/blog.php dir
-            //            'scaffold/config' => 'src/config/config.php',
+            'scaffold/config' => 'config/config.php',
             //            'composer' => 'composer.json',
         ],
         //        'replacements' => [
