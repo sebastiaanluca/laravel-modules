@@ -15,14 +15,14 @@ class MakeCommand extends Command
      * @var string
      */
     protected $name = 'module:make';
-
+    
     /**
      * The console command description.
      *
      * @var string
      */
     protected $description = 'Generate new module.';
-
+    
     /**
      * Execute the console command.
      *
@@ -31,7 +31,7 @@ class MakeCommand extends Command
     public function fire()
     {
         $names = $this->argument('name');
-
+        
         foreach ($names as $name) {
             with(new ModuleGenerator($name))
                 ->setFilesystem($this->laravel['files'])
@@ -43,7 +43,7 @@ class MakeCommand extends Command
                 ->generate();
         }
     }
-
+    
     /**
      * Get the console command arguments.
      *
@@ -51,16 +51,16 @@ class MakeCommand extends Command
      */
     protected function getArguments()
     {
-        return array(
-            array('name', InputArgument::IS_ARRAY, 'The names of modules will be created.'),
-        );
+        return [
+            ['name', InputArgument::IS_ARRAY, 'The names of modules will be created.'],
+        ];
     }
-
+    
     protected function getOptions()
     {
         return [
-            array('plain', 'p', InputOption::VALUE_NONE, 'Generate a plain module (without some resources).'),
-            array('force', null, InputOption::VALUE_NONE, 'Force the operation to run when module already exist.'),
+            ['plain', 'p', InputOption::VALUE_NONE, 'Generate a plain module (without some resources).'],
+            ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when module already exist.'],
         ];
     }
 }
