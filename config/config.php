@@ -1,7 +1,7 @@
 <?php
 
 return [
-
+    
     /*
     |--------------------------------------------------------------------------
     | Module Namespace
@@ -10,9 +10,10 @@ return [
     | Default module namespace.
     |
     */
-
-    'namespace' => 'Modules',
-
+    
+    // Package name is root namespace by default
+    'namespace' => null,
+    
     /*
     |--------------------------------------------------------------------------
     | Module Stubs
@@ -21,35 +22,39 @@ return [
     | Default module stubs.
     |
     */
-
+    
     'stubs' => [
         'enabled' => false,
         'path' => base_path() . '/vendor/nwidart/laravel-modules/src/Commands/stubs',
+        
+        // TODO: duplicate this section to a "default" key that's used when generating a module?
         'files' => [
-            'start' => 'start.php',
-            'routes' => 'Http/routes.php',
-            'json' => 'module.json',
-            'views/index' => 'Resources/views/index.blade.php',
-            'views/master' => 'Resources/views/layouts/master.blade.php',
-            'scaffold/config' => 'Config/config.php',
-            'composer' => 'composer.json',
+            //            'start' => 'start.php',
+            //            'routes' => 'Http/routes.php',
+            'module.json' => 'module.json',
+            //            'views/index' => 'Resources/views/index.blade.php',
+            //            'views/master' => 'Resources/views/layouts/master.blade.php',
+            
+            // TODO: move to e.g. config/modules/blog.php dir
+            //            'scaffold/config' => 'src/config/config.php',
+            //            'composer' => 'composer.json',
         ],
-        'replacements' => [
-            'start' => ['LOWER_NAME'],
-            'routes' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
-            'json' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
-            'views/index' => ['LOWER_NAME'],
-            'views/master' => ['STUDLY_NAME'],
-            'scaffold/config' => ['STUDLY_NAME'],
-            'composer' => [
-                'LOWER_NAME',
-                'STUDLY_NAME',
-                'VENDOR',
-                'AUTHOR_NAME',
-                'AUTHOR_EMAIL',
-                'MODULE_NAMESPACE',
-            ],
-        ],
+        //        'replacements' => [
+        //            'start' => ['LOWER_NAME'],
+        //            'routes' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
+        //            'module.json' => ['LOWER_NAME', 'STUDLY_NAME', 'MODULE_NAMESPACE'],
+        //            'views/index' => ['LOWER_NAME'],
+        //            'views/master' => ['STUDLY_NAME'],
+        //            'scaffold/config' => ['STUDLY_NAME'],
+        //            'composer' => [
+        //                'LOWER_NAME',
+        //                'STUDLY_NAME',
+        //                'VENDOR',
+        //                'AUTHOR_NAME',
+        //                'AUTHOR_EMAIL',
+        //                'MODULE_NAMESPACE',
+        //            ],
+        //        ],
     ],
     'paths' => [
         /*
@@ -61,8 +66,8 @@ return [
         | automatically to list of scanned folders.
         |
         */
-
-        'modules' => base_path('Modules'),
+        
+        'modules' => base_path('modules'),
         /*
         |--------------------------------------------------------------------------
         | Modules assets path
@@ -71,7 +76,7 @@ return [
         | Here you may update the modules assets path.
         |
         */
-
+        
         'assets' => public_path('modules'),
         /*
         |--------------------------------------------------------------------------
@@ -82,37 +87,35 @@ return [
         | the migration files?
         |
         */
-
+        
         'migration' => base_path('database/migrations'),
+        
         /*
-        |--------------------------------------------------------------------------
-        | Generator path
-        |--------------------------------------------------------------------------
-        |
-        | Here you may update the modules generator path.
-        |
-        */
-
+         * The directories to create when generating a module.
+         */
+        
         'generator' => [
-            'assets' => 'Assets',
-            'config' => 'Config',
-            'command' => 'Console',
-            'event' => 'Events',
-            'listener' => 'Events/Handlers',
-            'migration' => 'Database/Migrations',
-            'model' => 'Entities',
-            'repository' => 'Repositories',
-            'seeder' => 'Database/Seeders',
-            'controller' => 'Http/Controllers',
-            'filter' => 'Http/Middleware',
-            'request' => 'Http/Requests',
-            'provider' => 'Providers',
-            'lang' => 'Resources/lang',
-            'views' => 'Resources/views',
-            'test' => 'Tests',
-            'jobs' => 'Jobs',
-            'emails' => 'Emails',
-            'notifications' => 'Notifications',
+            'provider' => 'src/Providers',
+            //            'assets' => 'Assets',
+            // TODO: move to e.g. config/modules/blog.php dir
+            //            'config' => 'config',
+            
+            //            'command' => 'src/Console',
+            //            'event' => 'Events',
+            //            'listener' => 'Events/Handlers',
+            //            'migration' => 'Database/Migrations',
+            //            'model' => 'Entities',
+            //            'repository' => 'Repositories',
+            //            'seeder' => 'Database/Seeders',
+            //            'controller' => 'Http/Controllers',
+            //            'filter' => 'Http/Middleware',
+            //            'request' => 'Http/Requests',
+            //            'lang' => 'Resources/lang',
+            //            'views' => 'Resources/views',
+            //            'test' => 'Tests',
+            //            'jobs' => 'Jobs',
+            //            'emails' => 'Emails',
+            //            'notifications' => 'Notifications',
         ],
     ],
     /*
@@ -124,7 +127,7 @@ return [
     | directory. This is useful if you host the package in packagist website.
     |
     */
-
+    
     'scan' => [
         'enabled' => false,
         'paths' => [
@@ -139,7 +142,8 @@ return [
     | Here is the config for composer.json file, generated by this package
     |
     */
-
+    
+    // TODO: ditch composer wrapper and update in ModuleGenerator to use root vendor and author config keys
     'composer' => [
         'vendor' => 'nwidart',
         'author' => [

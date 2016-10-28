@@ -41,6 +41,10 @@ class MakeCommand extends Command
                 ->setForce($this->option('force'))
                 ->setPlain($this->option('plain'))
                 ->generate();
+            
+            $namespace = "\"{$name}\\\\\": \"modules/" . strtolower($name) . "/src\"";
+            
+            $this->line('To enable autoloading, add ' . $namespace . ' to the composer.json autoload psr-4 key.');
         }
     }
     

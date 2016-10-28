@@ -100,7 +100,7 @@ class Repository implements RepositoryInterface, Countable
         if ($this->config('scan.enabled')) {
             $paths = array_merge($paths, $this->config('scan.paths'));
         }
-
+    
         return $paths;
     }
 
@@ -370,9 +370,10 @@ class Repository implements RepositoryInterface, Countable
     public function getModulePath($module)
     {
         try {
-            return $this->findOrFail($module)->getPath() . '/';
+            // TODO: lowercasing the entire path might pose problems on case-sensitive systems
+            return strtolower($this->findOrFail($module)->getPath() . '/');
         } catch (ModuleNotFoundException $e) {
-            return $this->getPath() . '/' . Str::studly($module) . '/';
+            return $this->getPath() . '/' . strtolower($module) . '/';
         }
     }
 
