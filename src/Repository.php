@@ -114,7 +114,7 @@ class Repository implements RepositoryInterface, Countable
     {
         $paths = $this->paths;
         
-        $paths[] = strtolower($this->getPath()) . '/*/**';
+        $paths[] = strtolower($this->getPath()) . '/*';
         
         if ($this->config('scan.enabled')) {
             $paths = array_merge($paths, $this->config('scan.paths'));
