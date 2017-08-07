@@ -41,7 +41,7 @@ class ControllerCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $controllerPath = $this->laravel['modules']->config('paths.generator.controller');
+        $controllerPath = $this->laravel['modules']->config('stubs.resources.controller', '');
 
         return $path . $controllerPath . '/' . $this->getControllerName() . '.php';
     }
