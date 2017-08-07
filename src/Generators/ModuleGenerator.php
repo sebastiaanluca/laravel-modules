@@ -317,22 +317,30 @@ class ModuleGenerator extends Generator
      */
     public function generateResources()
     {
-        $this->console->call('module:make-seed', [
-            'name' => $this->getName(),
-            'module' => $this->getName(),
-            '--master' => true,
-        ]);
+        $resources = $this->module->config('stubs.resources');
 
-        $this->console->call('module:make-provider', [
-            'name' => $this->getName() . 'ServiceProvider',
-            'module' => $this->getName(),
-            '--master' => true,
-        ]);
+        if (array_key_exists('seeder', $resources)) {
+            $this->console->call('module:make-seed', [
+                'name' => $this->getName(),
+                'module' => $this->getName(),
+                '--master' => true,
+            ]);
+        }
 
-        $this->console->call('module:make-controller', [
-            'controller' => $this->getName() . 'Controller',
-            'module' => $this->getName(),
-        ]);
+        if (array_key_exists('provider', $resources)) {
+            $this->console->call('module:make-provider', [
+                'name' => $this->getName() . 'ServiceProvider',
+                'module' => $this->getName(),
+                '--master' => true,
+            ]);
+        }
+
+        if (array_key_exists('controller', $resources)) {
+            $this->console->call('module:make-controller', [
+                'controller' => $this->getName() . 'Controller',
+                'module' => $this->getName(),
+            ]);
+        }
     }
 
     /**

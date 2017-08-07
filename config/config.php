@@ -49,6 +49,11 @@ return [
                 'MODULE_NAMESPACE',
             ],
         ],
+        'resources' => [
+            'provider' => 'Providers',
+            'seeder' => 'Database/Seeders',
+            'controller' => 'Http/Controllers',
+        ],
     ],
     'paths' => [
         /*
@@ -101,11 +106,8 @@ return [
             'migration' => 'Database/Migrations',
             'model' => 'Entities',
             'repository' => 'Repositories',
-            'seeder' => 'Database/Seeders',
-            'controller' => 'Http/Controllers',
             'filter' => 'Http/Middleware',
             'request' => 'Http/Requests',
-            'provider' => 'Providers',
             'lang' => 'Resources/lang',
             'views' => 'Resources/views',
             'test' => 'Tests',

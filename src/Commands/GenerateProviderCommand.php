@@ -88,7 +88,7 @@ class GenerateProviderCommand extends GeneratorCommand
     {
         $path = $this->laravel['modules']->getModulePath($this->getModuleName());
 
-        $generatorPath = $this->laravel['modules']->config('paths.generator.provider');
+        $generatorPath = $this->laravel['modules']->config('stubs.resources.provider', '');
 
         return $path . $generatorPath . '/' . $this->getFileName() . '.php';
     }
